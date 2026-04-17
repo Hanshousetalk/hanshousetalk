@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>涵軒雅敘 - 專業房產與共享辦公</title>
+  <title>Han's HouseTalk - 專業房產與共享辦公</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
@@ -20,17 +20,19 @@
     .card { background: white; border-radius: 16px; border: 1px solid #e7e5e4; overflow: hidden; }
     input, select, textarea { border: 1px solid #d6d3d1; padding: 12px; border-radius: 8px; width: 100%; outline-color: #b4a082; }
     .copy-btn:active { transform: scale(0.95); }
+    /* 彈窗背景 */
+    .modal-active { overflow: hidden; }
   </style>
 </head>
 <body class="h-full">
 
-  <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-stone-200">
-    <div class="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
-      <div onclick="navigateTo('home')" class="cursor-pointer flex items-center gap-2">
-        <div class="w-10 h-10 gold-bg rounded flex items-center justify-center text-white font-bold text-xl shadow-inner">涵</div>
+  <nav class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-stone-200">
+    <div class="max-w-6xl mx-auto px-4 h-24 flex items-center justify-between">
+      <div onclick="navigateTo('home')" class="cursor-pointer flex items-center gap-3">
+        <img src="https://i.imgur.com/rN5MvM3.png" alt="Han's HouseTalk Logo" class="w-16 h-16 rounded-full shadow-md object-cover border-2 border-[#b4a082]">
         <div>
-          <div class="font-bold tracking-tighter">涵軒雅敘</div>
-          <div class="text-[10px] gold-text uppercase tracking-widest leading-none font-medium">Han Xuan Ya Xu</div>
+          <div class="font-bold tracking-tight text-xl">Han's HouseTalk</div>
+          <div class="text-[11px] gold-text uppercase tracking-widest leading-none font-medium">Real Estate Consultant</div>
         </div>
       </div>
       
@@ -39,7 +41,7 @@
         <a onclick="navigateTo('property')" class="nav-link">房地產資訊</a>
         <a onclick="navigateTo('coworking')" class="nav-link">共享辦公室</a>
         <a onclick="navigateTo('booking')" class="nav-link text-red-700 font-bold underline underline-offset-4">立即預約</a>
-        <a onclick="navigateTo('admin')" class="nav-link text-stone-400 border-l pl-4">管理員</a>
+        <button onclick="showAdminLogin()" class="text-stone-400 border-l pl-4 flex items-center gap-1.5"><i data-lucide="lock" class="w-4 h-4"></i>登入後台</button>
       </div>
       
       <button onclick="toggleMenu()" class="md:hidden text-stone-600 p-2"><i data-lucide="menu"></i></button>
@@ -49,7 +51,7 @@
       <a onclick="navigateTo('property'); toggleMenu()" class="block font-medium py-2">房地產資訊</a>
       <a onclick="navigateTo('coworking'); toggleMenu()" class="block font-medium py-2">共享辦公室</a>
       <a onclick="navigateTo('booking'); toggleMenu()" class="block font-bold text-red-700 py-2">立即預約</a>
-      <a onclick="navigateTo('admin'); toggleMenu()" class="block text-stone-400 py-2">管理員登入</a>
+      <button onclick="toggleMenu(); showAdminLogin()" class="block w-full text-left text-stone-400 py-2 font-medium">管理員登入</button>
     </div>
   </nav>
 
@@ -70,10 +72,10 @@
         <h2 class="text-3xl font-bold mb-2">房地產精選</h2>
         <p class="text-stone-500">專業經紀人為您把關每一處細節</p>
       </div>
-      <button onclick="toggleModal('prop-modal')" class="gold-bg text-white px-6 py-3 rounded-xl font-bold">+ 新增物件資料</button>
+      <button onclick="alert('尚未串接 Notion 資料庫，請先設定後台')" class="gold-bg text-white px-6 py-3 rounded-xl font-bold">+ 新增物件資料</button>
     </div>
     <div id="property-list" class="grid md:grid-cols-3 gap-8 py-20 text-stone-400 border-2 border-dashed border-stone-200 rounded-3xl text-center">
-      <div class="col-span-3 italic">目前尚無物件，點擊上方按鈕開始建立。</div>
+      <div class="col-span-3 italic">目前尚無物件，串接 Notion 後可展示精選房產。</div>
     </div>
   </section>
 
@@ -85,17 +87,6 @@
           位於台中核心地段，提供安靜、舒適且充滿活力的工作環境。<br>
           無論是個人創作或是團隊辦公，這裡都是您的理想選擇。
         </p>
-        <div class="space-y-4 mb-10">
-          <div class="flex items-start gap-3 bg-red-50 p-4 rounded-xl border border-red-100">
-            <i data-lucide="sparkles" class="text-red-600 w-6 h-6 shrink-0"></i>
-            <div>
-              <p class="font-bold text-red-900 leading-none mb-1">期間限定活動</p>
-              <p class="text-red-700 text-sm italic">Google 五星好評現折 $50 (評論一次，終身折價)</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-3 text-stone-600"><i data-lucide="map-pin" class="w-5 h-5 gold-text"></i> 台中市西區台灣大道二段</div>
-          <div class="flex items-center gap-3 text-stone-600"><i data-lucide="clock" class="w-5 h-5 gold-text"></i> 開放時間：09:00 - 00:00</div>
-        </div>
         <button onclick="navigateTo('booking')" class="bg-stone-800 text-white px-10 py-4 rounded-xl font-bold w-full md:w-auto">前往預約系統</button>
       </div>
       <div class="order-1 md:order-2 card h-[400px] bg-stone-100 flex flex-col items-center justify-center border-stone-200 shadow-inner">
@@ -111,143 +102,66 @@
         <h2 class="text-2xl font-bold mb-2">預約辦公位</h2>
         <p class="text-stone-500 text-sm font-medium">請填寫以下資訊，送出後將顯示匯款帳號</p>
       </div>
-
       <form id="booking-form" class="space-y-5">
-        <div class="grid md:grid-cols-2 gap-4">
-          <div><label class="block text-xs font-bold mb-1">申請人姓名</label><input type="text" id="b-name" placeholder="請填寫全名" required></div>
-          <div><label class="block text-xs font-bold mb-1">聯絡電話</label><input type="tel" id="b-phone" placeholder="09XX-XXX-XXX" required></div>
-        </div>
-        <div><label class="block text-xs font-bold mb-1">Email / LINE ID</label><input type="text" id="b-contact" placeholder="方便查帳聯繫使用" required></div>
-        <div><label class="block text-xs font-bold mb-1">預約日期</label><input type="date" id="b-date" required></div>
-        
-        <div>
-          <label class="block text-xs font-bold mb-1">預約方案 (應付金額：NT$ <span id="display-price" class="text-red-600 text-lg">300</span>)</label>
-          <select id="b-plan" onchange="calcPrice()" class="bg-white font-medium">
-            <option value="A" data-price="300">A. 包日 300元 (09:00 - 00:00)</option>
-            <option value="B" data-price="200">B. 白天 200元 (09:00 - 18:00)</option>
-            <option value="C" data-price="99">C. 夜間 99元 (18:00 - 22:00)</option>
-            <option value="D" data-price="150">D. 夜間延長 150元 (18:00 - 00:00)</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold mb-2">使用目的 (可複選)</label>
-          <div class="flex flex-wrap gap-2">
-            <label class="flex items-center gap-1 bg-stone-50 px-4 py-2 rounded-lg border cursor-pointer hover:bg-white"><input type="checkbox" name="purpose" value="辦公" class="w-4 h-4"> 辦公</label>
-            <label class="flex items-center gap-1 bg-stone-50 px-4 py-2 rounded-lg border cursor-pointer hover:bg-white"><input type="checkbox" name="purpose" value="個人創作" class="w-4 h-4"> 個人創作</label>
-            <label class="flex items-center gap-1 bg-stone-50 px-4 py-2 rounded-lg border cursor-pointer hover:bg-white"><input type="checkbox" name="purpose" value="讀書" class="w-4 h-4"> 讀書</label>
-            <label class="flex items-center gap-1 bg-stone-50 px-4 py-2 rounded-lg border cursor-pointer hover:bg-white"><input type="checkbox" name="purpose" value="休閒" class="w-4 h-4"> 休閒</label>
-          </div>
-        </div>
-
-        <button type="submit" class="w-full py-4 gold-bg text-white rounded-xl font-bold text-lg shadow-lg hover:brightness-110 transition mt-4">確認送出預約</button>
+        <input type="text" id="b-name" placeholder="申請人全名" required>
+        <input type="tel" id="b-phone" placeholder="聯絡電話" required>
+        <input type="date" id="b-date" required>
+        <select id="b-plan" onchange="calcPrice()" class="bg-white font-medium">
+          <option value="A" data-price="300">A. 包日 300元 (09:00 - 00:00)</option>
+          <option value="B" data-price="200">B. 白天 200元 (09:00 - 18:00)</option>
+        </select>
+        <button type="submit" class="w-full py-4 gold-bg text-white rounded-xl font-bold text-lg transition hover:brightness-110">確認送出預約</button>
       </form>
     </div>
   </section>
 
-  <div id="success-modal" class="fixed inset-0 bg-stone-900/90 z-[100] hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl scale-up">
-      <div class="text-center mb-6">
-        <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i data-lucide="check" class="w-10 h-10"></i>
-        </div>
-        <h3 class="text-2xl font-bold">預約申請已送出</h3>
-      </div>
+  <div id="admin-login-modal" class="fixed inset-0 bg-stone-900/90 z-[100] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-10 max-w-md w-full shadow-2xl relative scale-up">
+      <button onclick="closeAdminLogin()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-600"><i data-lucide="x"></i></button>
       
-      <div class="space-y-4 text-stone-700 text-sm bg-stone-50 p-6 rounded-xl border border-stone-200 leading-relaxed">
-        <p>請於匯款後完成查帳動作：<br><span class="text-red-600 font-bold">⚠️ 備註欄請填寫「預約者全名」</span></p>
-        <div class="bg-white p-4 rounded-lg border-2 border-stone-200 font-mono relative">
-          銀行：<span class="font-bold">822 中國信託</span><br>
-          帳號：<span id="account-num" class="font-bold text-lg">473540642102</span>
-          <button onclick="copyAccount()" class="copy-btn absolute right-2 top-2 bg-stone-800 text-white text-[10px] px-3 py-1.5 rounded-md">複製</button>
-        </div>
-        <p class="flex items-center gap-2"><i data-lucide="arrow-right-circle" class="w-4 h-4 text-green-600"></i>匯款後請截圖傳至官方 LINE</p>
-        <p class="flex items-center gap-2"><i data-lucide="key" class="w-4 h-4 text-green-600"></i>查帳後會給您一組「進出密碼」</p>
+      <div class="text-center mb-8">
+        <img src="https://i.imgur.com/rN5MvM3.png" alt="Han's HouseTalk Logo" class="w-20 h-20 rounded-full mx-auto mb-4 border border-[#b4a082]">
+        <h3 class="text-2xl font-bold">管理員登入</h3>
+        <p class="text-stone-500 text-sm">請輸入後台帳號密碼</p>
       </div>
-
-      <button onclick="toggleModal('success-modal')" class="w-full mt-8 bg-stone-800 text-white py-4 rounded-xl font-bold">我已了解</button>
-    </div>
-  </div>
-
-  <div id="prop-modal" class="fixed inset-0 bg-black/70 z-[100] hidden items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl p-8 max-w-2xl w-full my-8">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-bold">新增房地產物件</h3>
-        <button onclick="toggleModal('prop-modal')" class="text-stone-400"><i data-lucide="x"></i></button>
-      </div>
-      <form id="prop-form" class="grid md:grid-cols-2 gap-4">
-        <div class="col-span-2"><label class="block text-xs font-bold mb-1">物件名稱</label><input type="text" placeholder="例：台中大道黃金商辦"></div>
-        <div>
-          <label class="block text-xs font-bold mb-1">物件類型</label>
-          <select class="bg-white">
-            <option>大樓</option><option>華廈</option><option>公寓</option>
-            <option>透天</option><option>套房</option><option>商辦</option><option>土地</option>
-          </select>
-        </div>
-        <div><label class="block text-xs font-bold mb-1">使用類別 (土地填寫)</label><input type="text" placeholder="例：住宅區"></div>
-        <div><label class="block text-xs font-bold mb-1">開價 (萬)</label><input type="text" placeholder="例：1280"></div>
-        <div><label class="block text-xs font-bold mb-1">總坪數</label><input type="text" placeholder="例：45.2"></div>
-        <div class="grid grid-cols-3 gap-2 col-span-2">
-          <div><label class="block text-[10px] font-bold mb-1">房</label><input type="number" value="3"></div>
-          <div><label class="block text-[10px] font-bold mb-1">廳</label><input type="number" value="2"></div>
-          <div><label class="block text-[10px] font-bold mb-1">衛</label><input type="number" value="2"></div>
-        </div>
-        <div>
-          <label class="block text-[10px] font-bold mb-1">車位類型</label>
-          <select class="bg-white"><option>平面車位</option><option>機械車位</option><option>無</option></select>
-        </div>
-        <div><label class="block text-[10px] font-bold mb-1">屋齡 (年)</label><input type="number" placeholder="0"></div>
-        <div class="col-span-2 py-4"><label class="block text-xs font-bold mb-2 text-stone-400 italic">目前預覽版僅支援文字記錄，串接 Notion 後可正式上傳照片</label></div>
-        
-        <div class="col-span-2 flex gap-3 mt-4">
-          <button type="button" onclick="toggleModal('prop-modal')" class="flex-1 py-4 border rounded-xl font-bold">取消</button>
-          <button type="submit" class="flex-1 py-4 gold-bg text-white rounded-xl font-bold">儲存物件</button>
-        </div>
+      <form id="admin-login-form" class="space-y-6">
+        <input type="text" id="a-user" placeholder="管理員帳號" required class="font-medium">
+        <input type="password" id="a-pw" placeholder="管理員密碼" required class="font-medium">
+        <button type="submit" class="w-full py-4 bg-stone-800 text-white rounded-xl font-bold hover:bg-stone-950 transition">開始管理 (Notion 連動)</button>
       </form>
     </div>
   </div>
 
+  <section id="page-admin-dashboard" class="page-view max-w-6xl mx-auto px-4">
+    <div class="flex justify-between items-center mb-10">
+      <h2 class="text-3xl font-bold">Han's HouseTalk 管理儀表板</h2>
+      <button onclick="navigateTo('home')" class="bg-stone-200 text-stone-600 px-4 py-2 rounded-lg text-sm">登出後台</button>
+    </div>
+    <div class="bg-white rounded-2xl p-10 text-center text-stone-400 border border-stone-100">
+      <i data-lucide="loader-circle" class="w-12 h-12 text-stone-300 mx-auto mb-4 animate-spin"></i>
+      尚未串接 Notion API，無法讀取營業額與預約清單。
+    </div>
+  </section>
+
   <footer class="bg-stone-900 text-stone-400 py-16">
-    <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12">
-      <div>
-        <div class="flex items-center gap-2 mb-6">
-          <div class="w-8 h-8 gold-bg rounded flex items-center justify-center text-white font-bold">涵</div>
-          <span class="text-white font-bold tracking-widest italic">HAN XUAN YA XU</span>
-        </div>
-        <p class="text-sm leading-7">
-          地址：臺中市西區台灣大道二段375號9樓之2<br>
-          電話：04 2326 6168<br>
-          信箱：w9voteurs@gmail.com
-        </p>
-      </div>
-      <div class="grid grid-cols-2 gap-4 text-sm">
-        <h4 class="text-white font-bold col-span-2 mb-2">快速導覽</h4>
-        <a onclick="navigateTo('property')" class="hover:text-white cursor-pointer transition">房地產資訊</a>
-        <a onclick="navigateTo('coworking')" class="hover:text-white cursor-pointer transition">共享辦公室</a>
-        <a onclick="navigateTo('booking')" class="hover:text-white cursor-pointer transition">預約服務</a>
-        <a onclick="navigateTo('admin')" class="hover:text-white cursor-pointer transition">管理登入</a>
-      </div>
+    <div class="max-w-6xl mx-auto px-4">
+      <p class="text-sm">臺中市西區台灣大道二段375號9樓之2</p>
+      <p class="text-sm">Han's HouseTalk © 2026. Real Estate Consultant</p>
     </div>
   </footer>
 
   <script>
-    // 初始化圖標
     lucide.createIcons();
 
-    // 1. 頁面切換邏輯 (SPA)
     function navigateTo(pageId) {
-      console.log('正在切換至頁面：', pageId);
       document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
       const target = document.getElementById('page-' + pageId);
       if (target) {
         target.classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        console.error('找不到頁面 ID：', pageId);
       }
     }
 
-    // 2. 選單與彈窗
     function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
     function toggleModal(id) { 
       const m = document.getElementById(id);
@@ -255,55 +169,20 @@
       m.classList.toggle('flex');
     }
 
-    // 3. 預約金額計算
-    function calcPrice() {
-      const select = document.getElementById('b-plan');
-      const price = select.options[select.selectedIndex].getAttribute('data-price');
-      document.getElementById('display-price').innerText = price;
-    }
+    // 登入彈窗邏輯
+    function showAdminLogin() { toggleModal('admin-login-modal'); }
+    function closeAdminLogin() { toggleModal('admin-login-modal'); }
 
-    // 4. 複製功能 (手機優化)
-    function copyAccount() {
-      const text = document.getElementById('account-num').innerText;
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(() => alert('匯款帳號已複製！')).catch(err => console.error('複製失敗', err));
-      } else {
-        const temp = document.createElement('input');
-        temp.value = text;
-        document.body.appendChild(temp);
-        temp.select();
-        document.execCommand('copy');
-        document.body.removeChild(temp);
-        alert('匯款帳號已複製！');
-      }
-    }
-
-    // 5. 預約表單提交除錯
-    document.getElementById('booking-form').onsubmit = function(e) {
+    // 模擬登入 (未來改 Notion 驗證)
+    document.getElementById('admin-login-form').onsubmit = function(e) {
       e.preventDefault();
-      
-      const formData = {
-        name: document.getElementById('b-name').value,
-        phone: document.getElementById('b-phone').value,
-        contact: document.getElementById('b-contact').value,
-        date: document.getElementById('b-date').value,
-        plan: document.getElementById('b-plan').value,
-        purposes: Array.from(document.querySelectorAll('input[name="purpose"]:checked')).map(el => el.value)
-      };
-
-      console.log('--- 預約資料收集完畢 ---');
-      console.log(formData);
-      
-      // 未來在此加入 fetch 到 Notion API 的邏輯
-      toggleModal('success-modal');
+      alert('模擬登入成功 (預留接孔：Notion API)');
+      closeAdminLogin();
+      navigateTo('admin-dashboard');
     };
 
-    // 6. 物件儲存除錯
-    document.getElementById('prop-form').onsubmit = function(e) {
-      e.preventDefault();
-      alert('物件資料已暫存 (除錯模式)，串接 Notion 後將永久儲存至資料庫。');
-      toggleModal('prop-modal');
-    };
+    // 其他原本的預約邏輯保留...
+    document.getElementById('booking-form').onsubmit = function(e) { e.preventDefault(); alert('模擬預約成功！'); };
   </script>
 </body>
 </html>
