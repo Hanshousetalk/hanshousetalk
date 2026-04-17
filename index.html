@@ -8,32 +8,24 @@
     <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #b4a082; --stone-800: #1c1917; }
+        :root { --gold: #b4a082; --stone-800: #1c1917; --stone-100: #f5f5f4; }
         body { font-family: 'Noto Sans TC', sans-serif; background: #fdfdfc; color: #44403c; scroll-behavior: smooth; }
         h1, h2, h3, .serif { font-family: 'Noto Serif TC', serif; }
-        
-        /* 頁面切換動畫 */
         .page-view { display: none; padding-top: 100px; animation: fadeIn 0.4s ease-out forwards; }
         .page-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* 藝術感輸入框 */
         .art-input { border-bottom: 1px solid #e7e5e4; transition: 0.4s; background: transparent; width: 100%; padding: 8px 0; outline: none; border-radius: 0; font-size: 13px; }
         .art-input:focus { border-color: var(--gold); }
-        
-        /* 標籤樣式 (依照截圖) */
         .filter-tag { border: 1px solid #e7e5e4; padding: 6px 16px; font-size: 12px; cursor: pointer; transition: 0.2s; background: white; color: #44403c; border-radius: 2px; }
         .filter-tag.active { background: var(--stone-800); color: white; border-color: var(--stone-800); }
-
-        /* 管理後台側邊欄按鈕 */
         .admin-tab.active { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-weight: 700; color: #1c1917; }
-        
-        /* 圖片預覽方塊 */
         .preview-box { aspect-ratio: 1/1; border: 1px solid #e7e5e4; background: white; padding: 4px; position: relative; overflow: hidden; }
-        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .img-delete-btn { position: absolute; top: 4px; right: 4px; background: rgba(220, 38, 38, 0.8); color: white; border-radius: 99px; padding: 2px; opacity: 0; transition: 0.2s; }
+        .preview-box:hover .img-delete-btn { opacity: 1; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col">
 
     <nav class="fixed top-0 w-full z-[100] bg-white/90 backdrop-blur-md border-b border-stone-100 h-20 flex items-center px-6">
         <div class="max-w-7xl mx-auto w-full flex justify-between items-center">
@@ -53,261 +45,238 @@
         </div>
     </nav>
 
-    <div id="side-menu" class="fixed inset-0 bg-white z-[1000] translate-x-full transition-transform duration-500 overflow-y-auto">
-        <div class="p-8 flex flex-col min-h-full max-w-md ml-auto w-full border-l shadow-2xl bg-white">
+    <div id="side-menu" class="fixed inset-0 bg-white z-[1000] translate-x-full transition-transform duration-500 overflow-y-auto flex">
+        <div class="flex-1" onclick="toggleSideMenu(false)"></div>
+        <div class="p-8 flex flex-col h-full max-w-md w-full border-l shadow-2xl bg-white">
             <div class="flex justify-end mb-4"><button onclick="toggleSideMenu(false)"><i data-lucide="x" class="w-8 h-8 text-stone-200 hover:text-stone-800 transition-colors"></i></button></div>
             
-            <div class="mb-12 border-2 border-stone-900 p-8 relative bg-stone-50">
-                <span class="absolute -top-3 left-4 bg-stone-900 text-white px-2 text-[9px] font-bold tracking-[0.2em] uppercase">Founder Brand</span>
-                <h4 class="text-2xl font-bold serif mb-4 text-stone-800">鄭梓言</h4>
+            <nav class="flex flex-col gap-8 px-2 mb-16">
+                <h3 onclick="navigateTo('realestate')" class="text-2xl font-bold serif cursor-pointer hover:text-[#b4a082] transition-colors">房地產物件 ESTATE</h3>
+                <h3 onclick="navigateTo('booking')" class="text-2xl font-bold serif cursor-pointer hover:text-[#b4a082] transition-colors">共享辦公室 OFFICE</h3>
+                <h3 onclick="navigateTo('home')" class="text-xl font-medium serif cursor-pointer text-stone-300 hover:text-stone-800 transition-colors">首頁 HOME</h3>
+            </nav>
+
+            <div class="mt-auto border-2 border-stone-900 p-8 relative bg-stone-50 rounded-sm">
+                <span class="absolute -top-3 left-4 bg-stone-900 text-white px-2 text-[9px] font-bold tracking-[0.2em] uppercase">Founder</span>
+                <h4 class="text-2xl font-bold serif mb-4">鄭梓言</h4>
                 <div class="space-y-3 text-xs tracking-widest text-stone-600">
-                    <div class="flex items-center gap-3"><i data-lucide="phone" class="w-4 h-4 text-stone-300"></i> 0979-025-379</div>
-                    <div class="flex items-center gap-3"><i data-lucide="mail" class="w-4 h-4 text-stone-300"></i> hanshousetalk@gmail.com</div>
-                    <a href="https://line.me/ti/p/NGaPELm01M#~" target="_blank" class="flex items-center gap-3 text-green-600 font-bold mt-2 hover:opacity-70 transition-opacity"><i data-lucide="message-circle" class="w-4 h-4"></i> LINE 立即諮詢</a>
+                    <p><i data-lucide="phone" class="inline w-3 h-3 mr-2 text-stone-300"></i> 0979-025-379</p>
+                    <p><i data-lucide="mail" class="inline w-3 h-3 mr-2 text-stone-300"></i> hanshousetalk@gmail.com</p>
+                    <a href="https://line.me/ti/p/NGaPELm01M#~" target="_blank" class="flex items-center gap-2 text-green-600 font-bold mt-2 hover:opacity-70 transition-opacity"><i data-lucide="message-circle" class="w-4 h-4"></i> LINE 立即諮詢</a>
                 </div>
             </div>
-
-            <nav class="flex flex-col gap-8 px-2">
-                <h3 onclick="navigateTo('home')" class="text-2xl font-bold serif cursor-pointer hover:text-[#b4a082] transition-colors">首頁 HOME</h3>
-                <h3 onclick="navigateTo('realestate')" class="text-2xl font-bold serif cursor-pointer hover:text-[#b4a082] transition-colors">房地產資訊 ESTATE</h3>
-                <h3 onclick="navigateTo('booking')" class="text-2xl font-bold serif cursor-pointer hover:text-[#b4a082] transition-colors">預約辦公室 OFFICE</h3>
-            </nav>
         </div>
     </div>
 
-    <main>
+    <main class="flex-1">
         <section id="page-home" class="page-view active max-w-7xl mx-auto px-6 pb-24 text-center">
-            <div class="py-16">
-                <h2 class="text-4xl md:text-5xl font-bold serif mb-6 text-stone-800 tracking-tight">首頁預留內容區</h2>
-                <div class="aspect-[21/9] bg-stone-50 border border-stone-100 rounded-sm mb-12 flex items-center justify-center">
-                    <p class="serif text-stone-300 tracking-widest">BRAND IMAGE / 形象大圖預留</p>
+            <div class="py-12 md:py-20">
+                <h2 class="text-4xl md:text-5xl font-bold serif mb-4 text-stone-800 tracking-tight">打造理想的居住與工作空間</h2>
+                <p class="text-stone-400 text-sm md:text-base tracking-[0.2em] mb-12 font-medium uppercase">專業房地產經紀 × 現代共享辦公室</p>
+                <div class="aspect-[21/9] bg-stone-100 rounded-sm mb-16 shadow-lg overflow-hidden flex items-center justify-center">
+                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80" class="w-full h-full object-cover">
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-4xl mx-auto">
-                    <div class="p-8 border border-stone-100 bg-white shadow-sm">
-                        <h4 class="serif font-bold text-lg mb-2">精選物件搜尋</h4>
-                        <p class="text-xs text-stone-400 mb-6">為您尋找最合適的居家生活與投資標的。</p>
-                        <button onclick="navigateTo('realestate')" class="text-[10px] font-bold border-b border-stone-900 pb-1">GO ESTATE</button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-5xl mx-auto">
+                    <div class="p-10 border border-stone-100 bg-white shadow-sm hover:shadow-md transition-all rounded-sm">
+                        <h4 class="serif font-bold text-xl mb-3">房地產物件</h4>
+                        <p class="text-xs text-stone-400 leading-relaxed mb-8">精選優質建案與中古屋，專業媒合買賣與資產配置。</p>
+                        <button onclick="navigateTo('realestate')" class="text-[10px] font-bold border-b-2 border-stone-900 pb-1 tracking-[0.2em]">探索物件</button>
                     </div>
-                    <div class="p-8 border border-stone-100 bg-white shadow-sm">
-                        <h4 class="serif font-bold text-lg mb-2">共享辦公空間</h4>
-                        <p class="text-xs text-stone-400 mb-6">專業且靜謐的環境，提升您的工作效率。</p>
-                        <button onclick="navigateTo('booking')" class="text-[10px] font-bold border-b border-stone-900 pb-1">GO BOOKING</button>
+                    <div class="p-10 border border-stone-100 bg-white shadow-sm hover:shadow-md transition-all rounded-sm">
+                        <h4 class="serif font-bold text-xl mb-3">共享辦公室</h4>
+                        <p class="text-xs text-stone-400 leading-relaxed mb-8">提供靜謐且高效的工作場域，滿足您對辦公空間的極致追求。</p>
+                        <button onclick="navigateTo('booking')" class="text-[10px] font-bold border-b-2 border-stone-900 pb-1 tracking-[0.2em]">立即預約</button>
                     </div>
                 </div>
             </div>
         </section>
 
         <section id="page-realestate" class="page-view max-w-7xl mx-auto px-6 pb-24">
-            <div class="mb-12 border-b border-stone-100 pb-12">
-                <h2 class="text-3xl font-bold serif mb-10 text-stone-900">房地產物件搜尋</h2>
-                <div class="space-y-12">
+            <h2 class="text-3xl font-bold serif mb-10 text-stone-900 border-b border-stone-100 pb-6">房地產物件搜尋</h2>
+            <div class="space-y-12 mb-16 bg-white p-10 border border-stone-50 shadow-sm rounded-sm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div class="space-y-3">
-                        <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">1. 物件類型 (TYPE)</label>
+                        <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">1. 物件類型</label>
                         <div class="flex flex-wrap gap-2">
                             <span onclick="selectFilter(this)" class="filter-tag active">全部</span>
                             <span onclick="selectFilter(this)" class="filter-tag">大樓</span>
                             <span onclick="selectFilter(this)" class="filter-tag">華廈</span>
-                            <span onclick="selectFilter(this)" class="filter-tag">公寓</span>
                             <span onclick="selectFilter(this)" class="filter-tag">透天</span>
-                            <span onclick="selectFilter(this)" class="filter-tag">套房</span>
-                            <span onclick="selectFilter(this)" class="filter-tag">商辦</span>
                             <span onclick="selectFilter(this)" class="filter-tag">土地</span>
                         </div>
                     </div>
                     <div class="space-y-3">
-                        <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">2. 車位需求 (PARKING)</label>
+                        <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">2. 車位需求</label>
                         <div class="flex gap-2">
                             <span onclick="selectFilter(this)" class="filter-tag">平面車位</span>
                             <span onclick="selectFilter(this)" class="filter-tag">機械車位</span>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-x-10 gap-y-10">
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-stone-400 uppercase">屋齡 (AGE)</label>
-                            <input type="number" class="art-input" placeholder="不限">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-stone-400 uppercase">最高總價(萬)</label>
-                            <input type="number" class="art-input" placeholder="不限">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-stone-400 uppercase">客廳 (LIVING)</label>
-                            <input type="number" class="art-input" placeholder="不限">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-stone-400 uppercase">衛浴 (BATH)</label>
-                            <input type="number" class="art-input" placeholder="不限">
+                            <span onclick="selectFilter(this)" class="filter-tag">不限</span>
                         </div>
                     </div>
                 </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">3. 最高預算(萬)</label><input type="number" class="art-input" placeholder="不限"></div>
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">4. 最低坪數</label><input type="number" class="art-input" placeholder="不限"></div>
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">5. 最高屋齡</label><input type="number" class="art-input" placeholder="不限"></div>
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">6. 最少房數</label><input type="number" class="art-input" placeholder="不限"></div>
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">7. 客廳數量</label><input type="number" class="art-input" placeholder="不限"></div>
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">8. 衛浴數量</label><input type="number" class="art-input" placeholder="不限"></div>
+                </div>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div class="group cursor-pointer">
-                    <div class="aspect-[16/10] bg-stone-50 overflow-hidden mb-5 border border-stone-100 relative">
-                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                <div class="group cursor-pointer rounded-sm overflow-hidden">
+                    <div class="aspect-[16/9] bg-stone-100 mb-4 overflow-hidden border border-stone-50 relative">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
                     </div>
-                    <div class="space-y-1">
-                        <h3 class="serif text-xl font-bold text-stone-800">精品景觀大樓</h3>
-                        <p class="text-xs text-stone-400 font-medium">3房2廳2衛 | 屋齡 5年 | 45.2坪 | 機械車位 | 2,850 萬</p>
-                    </div>
+                    <h3 class="serif text-xl font-bold mb-1 group-hover:text-[#b4a082] transition-colors">精選物件標題</h3>
+                    <p class="text-xs text-stone-400 font-medium uppercase tracking-widest">3房2廳2衛 | 45.2坪 | 2,850 萬</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-booking" class="page-view max-w-4xl mx-auto px-6 pb-24">
+            <h2 class="text-3xl font-bold serif mb-10 text-stone-900 border-b border-stone-100 pb-6">預約共享辦公室</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 bg-white p-12 border shadow-sm rounded-sm">
+                <div class="space-y-6">
+                    <input type="text" placeholder="預約人姓名" class="art-input">
+                    <input type="tel" placeholder="電話號碼" class="art-input">
+                    <input type="date" class="art-input">
+                    <select class="art-input">
+                        <option>方案 A. 包日 (300元)</option>
+                        <option>方案 B. 白天 (200元)</option>
+                        <option>方案 C. 夜間 (99元)</option>
+                        <option>方案 D. 夜間延長 (150元)</option>
+                    </select>
+                    <button onclick="alert('預約成功！中信帳號：XXX-XXXXX-XXX (已複製)\nGoogle五星好評可折抵50元！')" class="w-full bg-stone-900 text-white py-4 text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors">提交預約單</button>
+                </div>
+                <div class="bg-stone-50 p-8 text-xs leading-loose text-stone-500 rounded-sm">
+                    <p class="font-bold text-stone-800 mb-4 uppercase tracking-widest flex items-center gap-2"><i data-lucide="info" class="w-4 h-4"></i> 預約須知</p>
+                    <ul class="space-y-2 list-disc list-inside">
+                        <li>• 提交後請於 1 小時內匯款。</li>
+                        <li>• 現場出示 Google 五星好評折抵 50 元。</li>
+                        <li>• 如需變更時間請提前 24 小時告知。</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
         <section id="page-admin" class="page-view max-w-7xl mx-auto px-6 pb-32">
             <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-64 bg-stone-50 border border-stone-100 p-2 space-y-1 rounded-sm">
-                    <div onclick="switchAdminTab('estate', this)" class="admin-tab p-4 active cursor-pointer transition-all text-sm">房地產物件發佈</div>
-                    <div onclick="switchAdminTab('check', this)" class="admin-tab p-4 text-stone-400 cursor-pointer transition-all text-sm">預約資料核對</div>
-                    <div onclick="switchAdminTab('stat', this)" class="admin-tab p-4 text-stone-400 cursor-pointer transition-all text-sm">業績統計看板</div>
-                    <div class="border-t border-stone-200 mt-4 pt-4">
-                        <button onclick="navigateTo('home')" class="text-red-500 font-bold text-xs px-4 tracking-widest">安全登出 LOGOUT</button>
-                    </div>
+                <div class="md:w-64 bg-stone-50 border p-2 h-fit space-y-1 shadow-inner rounded-sm">
+                    <div onclick="switchAdminTab('estate', this)" class="admin-tab p-4 active cursor-pointer text-sm tracking-wide">房地產物件管理</div>
+                    <div onclick="switchAdminTab('gallery', this)" class="admin-tab p-4 text-stone-400 cursor-pointer text-sm tracking-wide">共享辦公室環境維護</div>
+                    <div onclick="switchAdminTab('check', this)" class="admin-tab p-4 text-stone-400 cursor-pointer text-sm tracking-wide">預約核對/黑名單</div>
+                    <div onclick="switchAdminTab('stat', this)" class="admin-tab p-4 text-stone-400 cursor-pointer text-sm tracking-wide">業績看板</div>
+                    <div onclick="switchAdminTab('security', this)" class="admin-tab p-4 text-blue-600 font-bold cursor-pointer text-sm tracking-wide border-t">Founder 帳密設定</div>
+                    <div class="border-t mt-4 pt-4"><button onclick="navigateTo('home')" class="text-red-500 font-bold text-xs px-4">登出系統</button></div>
                 </div>
 
-                <div class="flex-1 bg-white border border-stone-100 p-8 md:p-12 shadow-sm min-h-[600px]">
+                <div class="flex-1 bg-white border p-12 shadow-sm min-h-[600px] rounded-sm">
                     <div id="adm-estate" class="admin-content space-y-10">
                         <h3 class="serif text-xl font-bold border-b pb-4">物件資料發佈</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <input type="text" placeholder="建案名稱" class="art-input font-bold">
+                        <div class="grid grid-cols-2 gap-8">
+                            <input type="text" placeholder="建案/物件名稱" class="art-input font-bold col-span-2">
                             <input type="number" placeholder="總價(萬)" class="art-input">
                             <input type="number" placeholder="坪數" class="art-input">
-                            <input type="number" placeholder="單位數量 (如：3)" class="art-input">
-                            
-                            <div class="space-y-2 col-span-1 md:col-span-2">
-                                <label class="text-[10px] text-stone-400 font-bold uppercase">格局配置 (房 / 廳 / 衛)</label>
-                                <div class="flex gap-4">
-                                    <input type="number" class="art-input text-center" placeholder="房">
-                                    <input type="number" class="art-input text-center" placeholder="廳">
-                                    <input type="number" class="art-input text-center" placeholder="衛">
-                                </div>
+                            <div class="flex gap-4 col-span-2 items-center">
+                                <label class="text-xs text-stone-400">格局:</label>
+                                <input type="number" class="art-input text-center w-16" placeholder="房">
+                                <input type="number" class="art-input text-center w-16" placeholder="廳">
+                                <input type="number" class="art-input text-center w-16" placeholder="衛">
                             </div>
-
-                            <div class="space-y-2">
-                                <label class="text-[10px] text-stone-400 font-bold uppercase">車位類型</label>
-                                <select class="art-input"><option>平面車位</option><option>機械車位</option><option>無車位</option></select>
-                            </div>
+                            <select class="art-input"><option>平面車位</option><option>機械車位</option><option>無車位</option></select>
                         </div>
-                        
                         <div class="space-y-4">
-                            <label class="text-[10px] text-stone-400 font-bold uppercase">物件照片上傳</label>
+                            <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">物件相片上傳 (無限張數預覽/刪除)</p>
                             <div id="estate-preview" class="grid grid-cols-3 md:grid-cols-5 gap-4">
-                                <div onclick="document.getElementById('fileIn').click()" class="aspect-square border-2 border-dashed border-stone-100 flex items-center justify-center text-stone-300 cursor-pointer hover:bg-stone-50">
-                                    <i data-lucide="image-plus" class="w-6 h-6"></i>
-                                </div>
+                                <div onclick="document.getElementById('fileIn').click()" class="aspect-square border-2 border-dashed border-stone-100 flex items-center justify-center text-stone-300 cursor-pointer hover:bg-stone-50 transition-colors rounded-sm"><i data-lucide="image-plus"></i></div>
                             </div>
                             <input type="file" id="fileIn" class="hidden" multiple accept="image/*" onchange="handleImgPreview(this.files, 'estate-preview')">
                         </div>
-                        
-                        <button class="w-full bg-[#b4a082] text-white py-5 font-bold text-xs uppercase tracking-[0.3em] shadow-lg hover:opacity-90 transition-opacity">發佈同步物件 PUBLISH</button>
+                        <button class="w-full bg-[#b4a082] text-white py-5 font-bold text-xs uppercase tracking-widest shadow-lg hover:opacity-90 transition-opacity">確認發佈同步前台</button>
                     </div>
 
-                    <div id="adm-check" class="admin-content hidden space-y-8">
-                        <div class="flex justify-between items-center border-b pb-4">
-                            <h3 class="serif text-xl font-bold">預約核對清單</h3>
-                            <button class="bg-red-500 text-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest">+ 新增黑名單</button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-xs text-left">
-                                <thead class="bg-stone-50 text-stone-400 font-bold uppercase">
-                                    <tr><th class="p-4">名單</th><th class="p-4">方案</th><th class="p-4">日期</th><th class="p-4 text-right">狀態</th></tr>
-                                </thead>
-                                <tbody class="divide-y border-b">
-                                    <tr class="hover:bg-stone-50/50 transition-colors">
-                                        <td class="p-4 font-bold text-stone-800">測試客戶</td>
-                                        <td class="p-4">A. 包日</td>
-                                        <td class="p-4 text-stone-400 font-medium">2026-04-18</td>
-                                        <td class="p-4 text-right text-orange-400 font-bold tracking-widest">待核對</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div id="adm-security" class="admin-content hidden space-y-10">
+                        <h3 class="serif text-xl font-bold border-b pb-4">Founder 安全驗證設定</h3>
+                        <div class="max-w-md space-y-8">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">新管理員帳號</label>
+                                <input type="text" id="new-u" placeholder="輸入新登入帳號" class="art-input">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">新登入密碼</label>
+                                <input type="password" id="new-p" placeholder="輸入新密碼" class="art-input">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">確認新密碼</label>
+                                <input type="password" id="confirm-p" placeholder="再次確認密碼" class="art-input">
+                            </div>
+                            <button onclick="handleSecurityUpdate()" class="bg-stone-900 text-white px-8 py-3 text-xs font-bold uppercase tracking-widest rounded-sm hover:bg-black transition-colors">更新設定 UPDATE</button>
                         </div>
                     </div>
 
-                    <div id="adm-stat" class="admin-content hidden space-y-12">
-                        <h3 class="serif text-xl font-bold border-b pb-4">業績統計看板</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div class="bg-stone-50 p-10 text-center border rounded-sm">
-                                <p class="text-[10px] text-stone-400 font-bold uppercase mb-2">總計營收</p>
-                                <p class="text-3xl serif font-bold text-stone-800">NT$ 0</p>
-                            </div>
-                            <div class="bg-stone-50 p-10 text-center border rounded-sm">
-                                <p class="text-[10px] text-stone-400 font-bold uppercase mb-2">總計預約</p>
-                                <p class="text-3xl serif font-bold text-stone-800">0 次</p>
-                            </div>
-                        </div>
-                    </div>
+                    <div id="adm-stat" class="admin-content hidden"> <h3 class="serif text-xl font-bold border-b pb-4">業績看板與統計數據</h3> </div>
+                    <div id="adm-check" class="admin-content hidden"> <h3 class="serif text-xl font-bold border-b pb-4">預約核對清單與黑名單管理</h3> </div>
+                    <div id="adm-gallery" class="admin-content hidden"> <h3 class="serif text-xl font-bold border-b pb-4">共享辦公室照片管理</h3> </div>
                 </div>
             </div>
         </section>
 
-        <section id="page-login" class="page-view max-w-md mx-auto px-8 pt-20">
-            <div class="bg-white p-12 border shadow-2xl space-y-10 text-center">
+        <section id="page-login" class="page-view max-w-md mx-auto px-8 pt-20 flex-1 flex flex-col justify-center">
+            <div class="bg-white p-12 border shadow-2xl space-y-10 text-center rounded-sm">
                 <div class="space-y-2">
-                    <h3 class="serif text-2xl font-bold uppercase tracking-widest text-stone-800">Admin Login</h3>
-                    <p class="text-[10px] text-stone-400 uppercase tracking-widest">管理員身分核對</p>
+                    <h3 class="serif text-2xl font-bold tracking-widest uppercase text-stone-800">Founder Login</h3>
+                    <p class="text-[10px] text-stone-400 uppercase tracking-widest">身分核對驗證</p>
                 </div>
                 <div class="space-y-6">
-                    <input type="text" id="adm-u" placeholder="Account ID" class="art-input">
+                    <input type="text" id="adm-u" placeholder="Founder Account" class="art-input">
                     <input type="password" id="adm-p" placeholder="Password" class="art-input">
-                    <button onclick="handleLogin()" class="w-full bg-stone-900 text-white py-5 text-xs font-bold uppercase tracking-[0.4em] hover:bg-black transition-colors">Identity Identify</button>
                 </div>
+                <button onclick="handleLogin()" class="w-full bg-stone-900 text-white py-5 text-xs font-bold uppercase tracking-widest hover:bg-black transition-colors">Identification</button>
             </div>
         </section>
     </main>
 
     <footer class="py-24 px-8 border-t bg-white mt-48">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-12">
-            <div class="text-[11px] tracking-[0.15em] space-y-4 font-semibold text-stone-900 uppercase">
+            <div class="text-[11px] tracking-widest space-y-4 font-semibold text-stone-900 uppercase">
                 <p>臺中市西區台灣大道二段375號9樓之2</p>
                 <div class="space-y-1">
-                    <p>04 2326 6168 / 0979-025-379</p>
-                    <p class="lowercase font-normal text-stone-400">hanshousetalk@gmail.com</p>
+                    <p>Contact: 04 2326 6168</p>
+                    <p>Phone: 0979-025-379</p>
+                    <p class="font-normal text-stone-400 lowercase">hanshousetalk@gmail.com</p>
                 </div>
             </div>
             <div class="text-right flex flex-col items-end">
                 <div class="flex gap-6 mb-10 text-stone-300">
-                    <i data-lucide="instagram" class="w-5 h-5 cursor-pointer hover:text-stone-900 transition-colors"></i>
-                    <i data-lucide="facebook" class="w-5 h-5 cursor-pointer hover:text-stone-900 transition-colors"></i>
+                    <a href="https://www.instagram.com/hanshousetalk/" target="_blank" class="hover:text-pink-500 transition-colors"><i data-lucide="instagram"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61556948061453" target="_blank" class="hover:text-blue-600 transition-colors"><i data-lucide="facebook"></i></a>
                 </div>
-                <p class="text-stone-100 text-[10px] font-bold tracking-[0.6em] uppercase mb-2">
+                <p class="text-stone-100 text-[10px] font-bold tracking-[0.6em] uppercase">
                     EST. <span onclick="navigateTo('login')" class="cursor-pointer hover:text-stone-900 transition-colors">2026</span>
                 </p>
-                <p class="text-[9px] text-stone-300 tracking-widest uppercase">HAN'S HOUSETALK ALL RIGHTS RESERVED.</p>
+                <p class="text-[9px] text-stone-300 tracking-widest uppercase mt-2 font-medium">HAN'S HOUSETALK © All Rights Reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
         lucide.createIcons();
-
-        // 路由系統
         function navigateTo(id) {
             document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
             const target = document.getElementById('page-' + id);
             if(target) target.classList.add('active');
             toggleSideMenu(false); window.scrollTo({top: 0, behavior: 'smooth'});
         }
-
-        // 選單系統
         function toggleSideMenu(s) { document.getElementById('side-menu').style.transform = s ? 'translateX(0)' : 'translateX(100%)'; }
-
-        // 篩選標籤系統
         function selectFilter(el) { el.parentElement.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
-
-        // 後端分頁系統
         function switchAdminTab(id, el) {
             document.querySelectorAll('.admin-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById('adm-' + id).classList.remove('hidden');
-            document.querySelectorAll('.admin-tab').forEach(t => { 
-                t.classList.remove('active', 'bg-white', 'shadow-sm', 'font-bold', 'text-stone-800'); 
-                t.classList.add('text-stone-400'); 
-            });
-            el.classList.add('active', 'bg-white', 'shadow-sm', 'font-bold', 'text-stone-800'); el.classList.remove('text-stone-400');
+            const target = document.getElementById('adm-' + id);
+            if(target) target.classList.remove('hidden');
+            document.querySelectorAll('.admin-tab').forEach(t => { t.classList.remove('active'); t.classList.add('text-stone-400'); });
+            el.classList.add('active'); el.classList.remove('text-stone-400');
         }
-
-        // 圖片預覽處理
         function handleImgPreview(files, containerId) {
             const container = document.getElementById(containerId);
             Array.from(files).forEach(file => {
@@ -315,18 +284,36 @@
                 reader.onload = e => {
                     const div = document.createElement('div');
                     div.className = "preview-box relative group";
-                    div.innerHTML = `<img src="${e.target.result}"><button onclick="this.parentElement.remove()" class="absolute top-0 right-0 bg-red-500 text-white p-1 opacity-0 group-hover:opacity-100">×</button>`;
+                    div.innerHTML = `
+                        <img src="${e.target.result}" class="w-full h-full object-cover">
+                        <button onclick="this.parentElement.remove()" class="img-delete-btn">
+                            <i data-lucide="x" class="w-2.5 h-2.5"></i>
+                        </button>`;
                     container.appendChild(div);
+                    lucide.createIcons(); // 更新Lucide圖示
                 };
                 reader.readAsDataURL(file);
             });
         }
-
-        // 登入邏輯
         function handleLogin() { 
+            // 簡易模擬登入驗證
             const u = document.getElementById('adm-u').value;
-            if(u === 'admin') navigateTo('admin'); 
-            else alert('身分驗證失敗');
+            const p = document.getElementById('adm-p').value;
+            if(u === 'admin' && p === 'password') navigateTo('admin'); 
+            else alert('身分核對驗證失敗');
+        }
+        function handleSecurityUpdate() {
+            const newU = document.getElementById('new-u').value;
+            const newP = document.getElementById('new-p').value;
+            const confP = document.getElementById('confirm-p').value;
+            if (newP !== confP) {
+                alert('密碼確認不一致'); return;
+            }
+            if (newU && newP) {
+                alert('Founder 安全設定已更新！\n(此為模擬效果，實際需對接後端)');
+            } else {
+                alert('請完整填寫帳號與密碼');
+            }
         }
     </script>
 </body>
