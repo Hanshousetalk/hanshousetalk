@@ -3,206 +3,232 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>涵軒雅敘 Han's HouseTalk</title>
+  <title>涵軒雅敘 Han's HouseTalk | 管理系統</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    :root { --gold: #b4a082; --stone-800: #292524; }
-    body { font-family: 'Noto Sans TC', sans-serif; background: #fdfdfc; color: #44403c; overflow-x: hidden; }
-    h1, h2, .font-serif { font-family: 'Noto Serif TC', serif; }
-    
-    /* 藝術感背景 */
-    .art-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; pointer-events: none; }
-
-    /* 玻璃擬態與動態 */
-    .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(180, 160, 130, 0.2); border-radius: 24px; }
-    .gold-gradient-btn { background: linear-gradient(135deg, #c5b49a 0%, #b4a082 100%); transition: all 0.3s ease; }
-    .gold-gradient-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(180, 160, 130, 0.3); }
-
-    /* 手機選單開關動畫 */
-    #mobile-menu { transition: all 0.3s ease-in-out; max-height: 0; overflow: hidden; opacity: 0; }
-    #mobile-menu.active { max-height: 600px; opacity: 1; padding: 24px; }
-
-    .page-view { display: none; padding-top: 120px; animation: slideUp 0.6s ease-out forwards; }
+    :root { --gold: #b4a082; }
+    body { font-family: 'Noto Sans TC', sans-serif; background: #fdfdfc; color: #44403c; }
+    h1, h2, h3 { font-family: 'Noto Serif TC', serif; }
+    .page-view { display: none; padding-top: 100px; animation: fadeIn 0.4s ease; }
     .page-view.active { display: block; }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* 使用目的排版修正 (點擊選取感) */
-    .purpose-chip { display: flex; align-items: center; gap: 8px; padding: 14px; border: 1px solid #e7e5e4; border-radius: 12px; cursor: pointer; transition: 0.2s; background: white; }
-    .purpose-chip:has(input:checked) { border-color: var(--gold); background: #f9f8f6; color: var(--gold); font-weight: bold; }
-    .purpose-chip input { accent-color: var(--gold); width: 18px; height: 18px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .glass-card { background: white; border: 1px solid #e7e5e4; border-radius: 1.5rem; box-shadow: 0 4px 25px -5px rgba(0,0,0,0.05); }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal.active { display: flex; }
   </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-  <svg class="art-bg" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0,1000 C300,800 400,200 1000,100" stroke="#b4a082" stroke-width="0.5" fill="none" />
-    <circle cx="850" cy="150" r="100" stroke="#b4a082" stroke-width="0.5" fill="none" opacity="0.5" />
-  </svg>
-
-  <nav class="fixed top-0 w-full z-[100] bg-white/90 backdrop-blur-md border-b border-stone-100">
-    <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+  <nav class="fixed top-0 w-full z-[100] bg-white/90 backdrop-blur-md border-b border-stone-100 h-24 flex items-center px-6">
+    <div class="max-w-7xl mx-auto w-full flex justify-between items-center">
       <div onclick="navigateTo('home')" class="cursor-pointer flex items-center gap-4">
-        <img src="./logo.png" alt="Logo" class="w-14 h-14 rounded-full border border-stone-100 shadow-sm" onerror="this.src='https://placehold.co/100x100?text=H'">
+        <div class="w-12 h-12 bg-stone-800 rounded-full flex items-center justify-center text-white font-serif text-xl">H</div>
         <div>
-          <h1 class="font-bold text-xl tracking-tighter text-stone-800">涵軒雅敘</h1>
-          <p class="text-[9px] text-[#b4a082] uppercase tracking-[0.3em] font-bold">Han's HouseTalk</p>
+          <h1 class="font-bold text-lg text-stone-800 leading-none">涵軒雅敘</h1>
+          <p class="text-[9px] text-[#b4a082] uppercase tracking-[0.3em] font-bold mt-1">Han's HouseTalk</p>
         </div>
       </div>
-      
       <div class="hidden md:flex gap-10 text-xs font-bold uppercase tracking-widest items-center">
         <a onclick="navigateTo('home')" class="hover:text-[#b4a082] transition-colors cursor-pointer">首頁</a>
-        <a onclick="navigateTo('property')" class="hover:text-[#b4a082] transition-colors cursor-pointer">房地產</a>
-        <a onclick="navigateTo('coworking')" class="hover:text-[#b4a082] transition-colors cursor-pointer">共享空間</a>
-        <a onclick="navigateTo('booking')" class="text-red-500 border-b-2 border-red-500 pb-1 cursor-pointer">預約預訂</a>
-        <button onclick="navigateTo('admin')" class="bg-stone-800 text-white px-5 py-2 rounded-full hover:bg-stone-700 transition-all">管理</button>
-      </div>
-      
-      <button onclick="toggleMenu()" class="md:hidden text-stone-800 p-2"><i data-lucide="menu"></i></button>
-    </div>
-
-    <div id="mobile-menu" class="md:hidden bg-white border-b border-stone-100">
-      <div class="flex flex-col gap-5">
-        <a onclick="navigateTo('home'); toggleMenu()" class="text-lg font-medium">首頁</a>
-        <a onclick="navigateTo('property'); toggleMenu()" class="text-lg font-medium">房地產精選</a>
-        <a onclick="navigateTo('coworking'); toggleMenu()" class="text-lg font-medium">共享辦公室</a>
-        <a onclick="navigateTo('booking'); toggleMenu()" class="text-lg font-bold text-red-600">立即預約位置</a>
-        <a onclick="navigateTo('admin'); toggleMenu()" class="text-sm text-stone-400 mt-4">後台管理</a>
+        <a onclick="navigateTo('booking')" class="text-red-500 cursor-pointer">預約預訂</a>
+        <button onclick="checkAdminAccess()" class="bg-stone-800 text-white px-6 py-2.5 rounded-full hover:bg-stone-700">管理後台</button>
       </div>
     </div>
   </nav>
 
-  <section id="page-home" class="page-view active min-h-screen flex items-center px-6">
-    <div class="max-w-7xl mx-auto w-full grid md:grid-cols-2 gap-20 items-center">
-      <div class="space-y-10">
-        <span class="text-[#b4a082] font-bold tracking-[0.5em] text-sm block">PREMIUM SERVICE</span>
-        <h2 class="text-3xl md:text-5xl font-bold leading-[1.8] text-stone-800">
-          我們不只是媒合房產<br>
-          更是空間的策展人<br>
-          <span class="text-stone-400 font-light text-2xl md:text-3xl">結合現代美學與共享精神</span><br>
-          <span class="text-stone-400 font-light text-2xl md:text-3xl">為您打造專注工作的靜謐之地</span>
-        </h2>
-        <button onclick="navigateTo('booking')" class="gold-gradient-btn text-white px-12 py-5 rounded-full font-bold shadow-xl text-lg hover:scale-105 transition-transform">
-          立即預約您的位置
-        </button>
-      </div>
-      <div class="relative hidden md:block">
-        <div class="glass-card aspect-[4/5] overflow-hidden flex items-center justify-center border-stone-100">
-           <img src="./logo.png" class="w-1/2 opacity-10 grayscale" alt="Decorative Logo">
-        </div>
-      </div>
-    </div>
+  <section id="page-home" class="page-view active max-w-7xl mx-auto px-6 text-center py-20">
+    <h2 class="text-3xl md:text-5xl font-bold leading-[1.8] text-stone-800 mb-10">
+      我們不只是媒合房產，更是空間的策展人。<br>
+      <span class="text-stone-400 font-light">結合現代美學與共享精神，為您打造專注工作的靜謐之地。</span>
+    </h2>
+    <button onclick="navigateTo('booking')" class="bg-[#b4a082] text-white px-12 py-5 rounded-full font-bold shadow-xl">立即預約位置</button>
   </section>
 
   <section id="page-booking" class="page-view max-w-2xl mx-auto px-6 pb-20">
-    <div class="glass-card p-10 md:p-16 border-stone-100 shadow-2xl">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold text-stone-800 mb-2">預約辦公位</h2>
-        <p class="text-[#b4a082] text-xs font-bold tracking-widest uppercase italic">Booking Your Workspace</p>
-      </div>
-
-      <form id="booking-form" class="space-y-6">
+    <div class="glass-card p-10 md:p-16">
+      <h2 class="text-3xl font-bold text-center mb-10 text-stone-800">預約辦公位</h2>
+      <form class="space-y-6" onsubmit="handleBookingSubmit(event)">
         <div class="grid md:grid-cols-2 gap-4">
-          <input type="text" placeholder="申請人全名" class="w-full p-4 border rounded-xl focus:ring-1 focus:ring-[#b4a082] outline-none" required>
-          <input type="tel" placeholder="聯絡電話" class="w-full p-4 border rounded-xl focus:ring-1 focus:ring-[#b4a082] outline-none" required>
+          <input type="text" placeholder="申請人姓名" class="w-full p-4 border rounded-xl outline-none" required>
+          <input type="tel" placeholder="聯絡電話" class="w-full p-4 border rounded-xl outline-none" required>
         </div>
-        <div class="space-y-1">
-          <label class="text-[10px] font-bold text-stone-400 uppercase ml-2">聯絡信箱 (固定)</label>
-          <input type="email" value="hanshousetalk@gmail.com" readonly class="w-full p-4 border rounded-xl bg-stone-50 text-stone-400 cursor-not-allowed">
-        </div>
+        <input type="text" placeholder="Email / LINE ID" class="w-full p-4 border rounded-xl outline-none" required>
         
         <div class="grid md:grid-cols-2 gap-4">
-          <input type="date" value="2026-04-17" class="p-4 border rounded-xl focus:ring-1 focus:ring-[#b4a082]">
-          <select id="b-plan" onchange="document.getElementById('p-price').innerText = this.value" class="p-4 border rounded-xl focus:ring-1 focus:ring-[#b4a082] bg-white">
-            <option value="300">A. 包日 300元 (09:00 - 00:00)</option>
-            <option value="200">B. 白天 200元 (09:00 - 18:00)</option>
-            <option value="99">C. 夜間 99元 (18:00 - 22:00)</option>
-            <option value="150">D. 夜間延長 150元 (18:00 - 00:00)</option>
+          <input type="date" value="2026-04-17" class="p-4 border rounded-xl outline-none">
+          <select class="p-4 border rounded-xl bg-white outline-none">
+            <option>A. 包日 300元 (09:00-00:00)</option>
+            <option>B. 白天 200元 (09:00-18:00)</option>
+            <option>C. 夜間 99元 (18:00-22:00)</option>
+            <option>D. 夜間延長 150元 (18:00-00:00)</option>
           </select>
         </div>
 
-        <div class="p-8 bg-stone-900 rounded-2xl text-center shadow-inner">
-          <div class="text-white text-3xl font-serif">應付金額：NT$ <span id="p-price">300</span></div>
-        </div>
-
         <div>
-          <label class="text-xs font-bold text-stone-400 mb-4 block uppercase tracking-widest">使用目的 (可多選)</label>
-          <div class="grid grid-cols-2 gap-4">
-            <label class="purpose-chip"><input type="checkbox"><span>辦公</span></label>
-            <label class="purpose-chip"><input type="checkbox"><span>個人創作</span></label>
-            <label class="purpose-chip"><input type="checkbox"><span>讀書</span></label>
-            <label class="purpose-chip"><input type="checkbox"><span>休閒</span></label>
+          <label class="text-xs font-bold text-stone-400 mb-3 block">使用目的 (可複選)</label>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <label class="flex items-center gap-2 p-3 border rounded-lg cursor-pointer"><input type="checkbox"> 辦公</label>
+            <label class="flex items-center gap-2 p-3 border rounded-lg cursor-pointer"><input type="checkbox"> 個人創作</label>
+            <label class="flex items-center gap-2 p-3 border rounded-lg cursor-pointer"><input type="checkbox"> 讀書</label>
+            <label class="flex items-center gap-2 p-3 border rounded-lg cursor-pointer"><input type="checkbox"> 休閒</label>
+            <input type="text" placeholder="其他..." class="p-3 border rounded-lg text-sm">
           </div>
         </div>
 
-        <button type="submit" class="w-full py-5 gold-gradient-btn text-white rounded-full font-bold shadow-xl mt-8 text-lg">確認送出申請</button>
+        <button type="submit" class="w-full py-5 bg-[#b4a082] text-white rounded-full font-bold text-lg shadow-lg">送出預約申請</button>
       </form>
     </div>
   </section>
 
-  <section id="page-property" class="page-view max-w-7xl mx-auto px-6 text-center">
-    <h2 class="text-4xl font-bold mb-8">房地產精選</h2>
-    <div class="py-40 border-2 border-dashed border-stone-200 rounded-[40px] bg-stone-50/30 text-stone-400">目前暫無物件，敬請期待</div>
-  </section>
-  <section id="page-coworking" class="page-view max-w-7xl mx-auto px-6 text-center">
-    <h2 class="text-4xl font-bold mb-8">共享辦公空間</h2>
-    <div class="py-40 glass-card">空間環境相簿展示中</div>
-  </section>
-  <section id="page-admin" class="page-view max-w-7xl mx-auto px-6">
-    <h2 class="text-3xl font-bold mb-8">管理後台</h2>
-    <div class="glass-card p-12 text-center text-stone-400">請輸入管理密碼以存取業績看板</div>
-  </section>
+  <section id="page-admin-dashboard" class="page-view max-w-7xl mx-auto px-6 pb-20">
+    <div class="flex justify-between items-center mb-10">
+      <h2 class="text-3xl font-bold">管理後台</h2>
+      <button onclick="logout()" class="text-red-500 font-bold">登出</button>
+    </div>
 
-  <footer class="bg-white border-t border-stone-100 py-20 mt-20">
-    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16">
-      <div class="space-y-8">
-        <div class="flex items-center gap-4">
-          <img src="./logo.png" class="w-14 h-14 rounded-full" alt="Footer Logo">
-          <h3 class="font-bold text-2xl text-stone-800">涵軒雅敘 Han's HouseTalk</h3>
+    <div class="glass-card p-8 mb-10">
+      <h3 class="text-xl font-bold mb-6 flex items-center gap-2"><i data-lucide="plus-circle"></i> 新增房地產物件</h3>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="md:col-span-1 border-2 border-dashed border-stone-200 rounded-xl flex flex-col items-center justify-center p-6 text-stone-400">
+           <i data-lucide="image" class="mb-2"></i> 上傳物件照片
         </div>
-        <div class="text-stone-500 text-sm leading-loose space-y-4">
-          <p class="font-bold text-stone-800 text-lg border-b border-[#b4a082] inline-block mb-2">品牌聯絡資訊</p>
-          <p class="flex items-start gap-3"><i data-lucide="map-pin" class="w-5 h-5 text-[#b4a082] shrink-0 mt-1"></i> 臺中市西區台灣大道二段375號9樓之2</p>
-          <p class="flex items-center gap-3"><i data-lucide="phone" class="w-5 h-5 text-[#b4a082] shrink-0"></i> 04 2326 6168</p>
-          <p class="flex items-center gap-3"><i data-lucide="mail" class="w-5 h-5 text-[#b4a082] shrink-0"></i> hanshousetalk@gmail.com</p>
+        <div class="md:col-span-2 space-y-4">
+          <input type="text" placeholder="物件名稱" class="w-full p-3 border rounded-lg">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <input type="text" placeholder="價格 (萬)" class="p-3 border rounded-lg">
+            <input type="text" placeholder="坪數" class="p-3 border rounded-lg">
+            <input type="text" placeholder="屋齡" class="p-3 border rounded-lg">
+            <input type="number" placeholder="房數" class="p-3 border rounded-lg">
+            <input type="number" placeholder="客廳數" class="p-3 border rounded-lg">
+            <input type="number" placeholder="衛浴數" class="p-3 border rounded-lg">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <select class="p-3 border rounded-lg"><option>平面車位</option><option>機械車位</option><option>無車位</option></select>
+            <select id="property-type" onchange="toggleLandType(this.value)" class="p-3 border rounded-lg">
+              <option>大樓</option><option>華廈</option><option>公寓</option><option>透天</option><option>套房</option><option>商辦</option><option value="land">土地</option>
+            </select>
+          </div>
+          <input id="land-category" type="text" placeholder="請輸入土地使用類別" class="w-full p-3 border rounded-lg hidden">
+          <button class="w-full py-4 bg-stone-800 text-white rounded-lg font-bold">確認發佈物件</button>
         </div>
-      </div>
-      <div class="flex flex-col md:items-end justify-end">
-        <p class="text-[10px] text-stone-300 tracking-[0.4em] font-bold uppercase">© 2026 HAN'S HOUSETALK. CREATING BETTER SPACE.</p>
       </div>
     </div>
+
+    <div class="glass-card p-8 mb-10">
+      <h3 class="text-xl font-bold mb-6 flex items-center gap-2"><i data-lucide="layout"></i> 共享辦公室編輯</h3>
+      <div class="space-y-4">
+        <div class="border-2 border-dashed border-stone-200 rounded-xl p-8 text-center text-stone-400">上傳環境介紹照片</div>
+        <textarea placeholder="環境與特色介紹..." class="w-full p-4 border rounded-xl h-24"></textarea>
+        <button class="bg-[#b4a082] text-white px-8 py-3 rounded-lg font-bold">更新環境介紹</button>
+      </div>
+    </div>
+    
+    <div class="glass-card overflow-hidden">
+      <div class="p-6 font-bold bg-stone-50 border-b">預約資訊單管理</div>
+      <table class="w-full text-left text-sm">
+        <thead class="bg-stone-50"><tr><th class="p-4">姓名</th><th class="p-4">日期</th><th class="p-4">方案</th><th class="p-4">操作</th></tr></thead>
+        <tbody class="divide-y">
+          <tr>
+            <td class="p-4">預設客戶</td><td class="p-4">2026-04-18</td><td class="p-4">A.包日</td>
+            <td class="p-4 flex gap-2">
+              <button class="text-green-600 font-bold">確認</button>
+              <button class="text-stone-400 font-bold">編輯</button>
+              <button class="text-red-400 font-bold">刪除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="page-login" class="page-view max-w-md mx-auto px-6">
+    <div class="glass-card p-10 text-center">
+      <h2 class="text-2xl font-bold mb-6">管理登入</h2>
+      <input type="text" id="admin-user" placeholder="帳號" class="w-full p-4 border rounded-xl mb-4">
+      <input type="password" id="admin-pass" placeholder="密碼" class="w-full p-4 border rounded-xl mb-4">
+      <button onclick="handleLogin()" class="w-full py-4 bg-stone-800 text-white rounded-xl font-bold">登入</button>
+    </div>
+  </section>
+
+  <div id="success-modal" class="modal px-6">
+    <div class="bg-white max-w-lg w-full rounded-3xl p-8 shadow-2xl relative">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-stone-300"><i data-lucide="x"></i></button>
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+           <i data-lucide="check-circle-2" class="w-10 h-10"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-stone-800">預約申請已送出！</h3>
+      </div>
+      
+      <div class="space-y-4 text-sm leading-relaxed">
+        <p class="text-stone-600">請您匯款您預約時段的金額至此帳戶：<br><span class="text-red-500 font-bold">(請於備註攔填預約者全名)</span></p>
+        <div class="bg-stone-50 p-4 rounded-xl border border-stone-100 relative group">
+          <p>銀行代碼：<span class="font-bold">822 中國信託</span></p>
+          <p>帳號：<span id="bank-acc" class="font-bold text-lg tracking-wider">4735 4064 2102</span></p>
+          <button onclick="copyAcc()" class="mt-2 text-xs font-bold text-[#b4a082] underline italic">點擊複製帳號</button>
+        </div>
+        <p class="flex items-start gap-2 text-stone-600"><i data-lucide="check-square" class="text-green-500 shrink-0"></i> 匯款後請提供匯款畫面傳至官方 LINE 供查帳，之後會給您一組專屬進出密碼。</p>
+        
+        <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+          <p class="font-bold text-red-700 flex items-center gap-2">🏮 期間限定活動</p>
+          <p class="text-xs text-red-600 mt-1">凡包日方案 Google 留下五星⭐⭐⭐⭐⭐好評，<span class="font-bold underline">現折 50 元</span>（評論一次，之後每次都可以折價！）。</p>
+          <p class="text-xs text-red-600 mt-1">原價 300 元 → <span class="text-lg font-bold">折價後 250 元</span></p>
+        </div>
+      </div>
+      <button onclick="closeModal()" class="w-full py-4 bg-stone-800 text-white rounded-xl font-bold mt-8">我明白了</button>
+    </div>
+  </div>
+
+  <footer class="bg-white border-t py-12 px-6 mt-20 text-center">
+    <p class="text-sm font-bold text-stone-800">臺中市西區台灣大道二段375號9樓之2 | 04 2326 6168</p>
+    <p class="text-[10px] text-stone-300 mt-2 uppercase tracking-widest">© 2026 Han's HouseTalk</p>
   </footer>
 
-  <a href="https://lin.ee/WexkD85" target="_blank" class="fixed bottom-10 right-10 z-[100] bg-[#06C755] text-white p-4 rounded-full shadow-2xl flex items-center gap-2 hover:scale-110 transition-transform">
-    <i data-lucide="message-circle"></i><span class="font-bold text-sm">LINE 線上諮詢</span>
-  </a>
-
   <script>
-    // 初始化 Lucide 圖標
     lucide.createIcons();
+    let isLoggedIn = false;
 
-    // 導航切換
     function navigateTo(id) {
-      document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-      const target = document.getElementById('page-' + id);
-      if(target) {
-        target.classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+      document.getElementById('page-' + id).classList.add('active');
+      window.scrollTo(0,0);
     }
 
-    // 手機選單功能 (修復點擊反應問題)
-    function toggleMenu() {
-      const menu = document.getElementById('mobile-menu');
-      menu.classList.toggle('active');
-    }
-
-    // 表單處理
-    document.getElementById('booking-form').onsubmit = function(e) {
+    function handleBookingSubmit(e) {
       e.preventDefault();
-      alert('預約申請已送出！請聯繫客服確認。');
-    };
+      document.getElementById('success-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('success-modal').classList.remove('active');
+      navigateTo('home');
+    }
+
+    function copyAcc() {
+      navigator.clipboard.writeText("473540642102");
+      alert("帳號已複製！");
+    }
+
+    function toggleLandType(val) {
+      const landInp = document.getElementById('land-category');
+      landInp.classList.toggle('hidden', val !== 'land');
+    }
+
+    function handleLogin() {
+      const u = document.getElementById('admin-user').value;
+      const p = document.getElementById('admin-pass').value;
+      if(u === "admin" && p === "1234") { isLoggedIn = true; navigateTo('admin-dashboard'); }
+      else alert("錯誤");
+    }
+
+    function checkAdminAccess() {
+      if(isLoggedIn) navigateTo('admin-dashboard');
+      else navigateTo('login');
+    }
+
+    function logout() { isLoggedIn = false; navigateTo('home'); }
   </script>
 </body>
 </html>
