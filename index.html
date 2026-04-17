@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>涵軒雅敘 - 房地產 × 共享辦公室</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; scroll-behavior: smooth; }
+    body { font-family: 'Noto Serif TC', serif; background: #faf8f5; color: #3a352d; }
+    .font-elegant { font-family: 'Cormorant Garamond', serif; }
+    .nav-link { transition: all 0.3s ease; cursor: pointer; }
+    .nav-link:hover { color: #b4a082; }
+    .page-view { display: none; padding-top: 80px; }
+    .page-view.active { display: block; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+    .toast { position: fixed; bottom: 24px; right: 24px; padding: 16px 24px; border-radius: 8px; z-index: 9999; animation: slideIn 0.3s ease; }
+    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; align-items: center; justify-content: center; }
+  </style>
+</head>
+<body>
+
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-[#faf8f5]/95 backdrop-blur-md border-b border-[#b4a082]/15">
+    <div class="max-w-6xl mx-auto px-4 h-[72px] flex items-center justify-between">
+      <div onclick="navigateTo('home')" class="flex items-center gap-3 cursor-pointer">
+        <svg width="32" height="32" viewBox="0 0 40 40" fill="none"><rect x="2" y="2" width="36" height="36" rx="4" stroke="#b4a082" stroke-width="1.5"/><path d="M10 12 L20 8 L30 12 L30 28 L20 32 L10 28Z" fill="#b4a08215" stroke="#b4a082"/></svg>
+        <div><div class="font-bold tracking-wider">涵軒雅敘</div><div class="text-[10px] text-[#b4a082]">HAN XUAN YA XU</div></div>
+      </div>
+      
+      <div class="hidden md:flex items-center gap-8 text-sm">
+        <a onclick="navigateTo('home')" class="nav-link">首頁</a>
+        <a onclick="navigateTo('property')" class="nav-link">房地產</a>
+        <a onclick="navigateTo('coworking')" class="nav-link">共享辦公室</a>
+        <a onclick="navigateTo('booking')" class="nav-link">預約諮詢</a>
+        <button onclick="showAdminLogin()" class="text-[#998a72] flex items-center gap-1"><i data-lucide="lock" class="w-4 h-4"></i>後台</button>
+      </div>
+
+      <button onclick="toggleMobileMenu()" class="md:hidden text-[#b4a082]"><i data-lucide="menu"></i></button>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-b p-4 space-y-4 shadow-lg">
+      <a onclick="navigateTo('home'); toggleMobileMenu()" class="block py-2">首頁</a>
+      <a onclick="navigateTo('property'); toggleMobileMenu()" class="block py-2">房地產</a>
+      <a onclick="navigateTo('coworking'); toggleMobileMenu()" class="block py-2">共享辦公室</a>
+      <a onclick="navigateTo('booking'); toggleMobileMenu()" class="block py-2">預約諮詢</a>
+      <button onclick="showAdminLogin(); toggleMobileMenu()" class="w-full text-left py-2 text-[#998a72]">後台管理</button>
+    </div>
+  </nav>
+
+  <main id="page-home" class="page-view active text-center">
+    <section class="py-20">
+      <h1 class="text-5xl font-bold mb-4 tracking-[0.2em]">涵軒雅敘</h1>
+      <p class="font-elegant text-[#b4a082] text-xl mb-8">Professional Real Estate & Co-working</p>
+      <div class="flex justify-center gap-4">
+        <button onclick="navigateTo('property')" class="bg-[#b4a082] text-white px-8 py-3 rounded-full">找房子</button>
+        <button onclick="navigateTo('coworking')" class="border border-[#b4a082] text-[#b4a082] px-8 py-3 rounded-full">找辦公室</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="page-property" class="page-view max-w-6xl mx-auto px-4">
+    <div class="bg-white p-8 rounded-2xl border border-[#b4a082]/20 mb-12">
+      <h3 class="text-xl font-bold mb-6">新增物件資產</h3>
+      <form id="property-form" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="text" id="prop-name" placeholder="物件名稱" class="border p-3 rounded-lg" required>
+          <select id="prop-type" class="border p-3 rounded-lg"><option value="大樓">大樓</option><option value="透天">透天</option><option value="土地">土地</option></select>
+        </div>
+        
+        <div class="p-4 bg-[#faf8f5] rounded-xl border border-dashed border-[#b4a082]">
+          <label class="block text-sm font-bold mb-3">車位類型與數量</label>
+          <div class="flex flex-wrap gap-6">
+            <div class="flex items-center gap-2">
+              <span class="text-sm">平面車位</span>
+              <input type="number" id="prop-park-flat" class="w-16 border p-1 rounded" value="0" min="0">
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm">機械車位</span>
+              <input type="number" id="prop-park-mech" class="w-16 border p-1 rounded" value="0" min="0">
+            </div>
+          </div>
+        </div>
+
+        <input type="file" id="prop-images" multiple class="block w-full text-sm text-stone-500">
+        <button type="submit" class="w-full bg-[#b4a082] text-white py-3 rounded-xl">上傳物件</button>
+      </form>
+    </div>
+    <div id="properties-list" class="grid md:grid-cols-3 gap-6 pb-20"></div>
+  </div>
+
+  <div id="page-admin" class="page-view max-w-6xl mx-auto px-4">
+    <h2 class="text-3xl font-bold mb-8">管理總覽</h2>
+    <div class="grid md:grid-cols-3 gap-6 mb-10">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+        <p class="text-stone-500 text-sm">本月累計營業額</p>
+        <p class="text-3xl font-bold text-[#b4a082]">NT$ <span id="total-revenue">0</span></p>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+        <p class="text-stone-500 text-sm">待處理預約</p>
+        <p class="text-3xl font-bold">4 <span class="text-sm font-normal">筆</span></p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border overflow-hidden">
+      <div class="bg-[#f5f2ed] p-4 font-bold border-b">預約客戶清單</div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead><tr class="bg-stone-50 border-b"><th class="p-4">時間</th><th class="p-4">客戶</th><th class="p-4">方案</th><th class="p-4">金額</th><th class="p-4">狀態</th></tr></thead>
+          <tbody id="admin-booking-table">
+            <tr><td class="p-4">2026/04/17</td><td class="p-4">王小明</td><td class="p-4">包日 300</td><td class="p-4">$300</td><td class="p-4 text-green-600">已付款</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="admin-login-modal" class="modal-overlay">
+    <div class="bg-white p-8 rounded-2xl w-full max-w-xs">
+      <h3 class="font-bold text-xl mb-4 text-center">管理員登入</h3>
+      <input type="text" id="admin-user" placeholder="帳號" class="w-full border p-3 rounded-lg mb-4">
+      <input type="password" id="admin-pw" placeholder="密碼" class="w-full border p-3 rounded-lg mb-6">
+      <div class="flex gap-2">
+        <button onclick="closeAdminLogin()" class="flex-1 py-3 border rounded-lg">取消</button>
+        <button onclick="handleLogin()" class="flex-1 py-3 bg-[#b4a082] text-white rounded-lg">登入</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 初始化 Lucide 圖標
+    lucide.createIcons();
+
+    // 路由控制
+    function navigateTo(page) {
+      document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById(`page-${page}`);
+      if (target) target.classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    // 行動版選單切換
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    // 登入邏輯
+    function showAdminLogin() { document.getElementById('admin-login-modal').style.display = 'flex'; }
+    function closeAdminLogin() { document.getElementById('admin-login-modal').style.display = 'none'; }
+    
+    function handleLogin() {
+      const u = document.getElementById('admin-user').value;
+      const p = document.getElementById('admin-pw').value;
+      // 這裡未來會改成從 Notion 驗證密碼
+      if (u === 'admin' && p === '12345') {
+        alert('登入成功！進入管理介面');
+        closeAdminLogin();
+        navigateTo('admin');
+      } else {
+        alert('密碼錯誤');
+      }
+    }
+
+    // 房地產物件上傳邏輯
+    document.getElementById('property-form').onsubmit = function(e) {
+      e.preventDefault();
+      const flat = document.getElementById('prop-park-flat').value;
+      const mech = document.getElementById('prop-park-mech').value;
+      
+      // 模擬存入陣列 (未來改為寫入 Notion)
+      const propInfo = `名稱：${document.getElementById('prop-name').value}, 車位：平面${flat}/機械${mech}`;
+      console.log('即時資料保存：', propInfo);
+      
+      alert('已記錄物件：' + propInfo);
+      this.reset();
+    };
+
+    /* 未來串接 Notion 的位置：
+       1. 在 handleLogin 裡串接 Notion Database 讀取管理者資料。
+       2. 在 property-form 的 onSubmit 裡調用 Notion API 的 pages.create。
+       3. 在 admin 頁面載入時調用 databases.query 抓取營業額。
+    */
+  </script>
+</body>
+</html>
