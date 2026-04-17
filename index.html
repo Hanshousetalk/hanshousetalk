@@ -21,17 +21,17 @@
         .art-input { border-bottom: 1px solid #e7e5e4; transition: 0.4s; background: transparent; width: 100%; padding: 12px 0; outline: none; border-radius: 0; font-size: 14px; }
         .art-input:focus { border-color: var(--gold); }
         
-        /* 方案 Pill */
-        .plan-pill { border: 1px solid #e7e5e4; padding: 12px; border-radius: 4px; cursor: pointer; transition: 0.3s; background: white; border-left: 4px solid transparent; }
-        .plan-pill.selected { border-left-color: var(--gold); background: #fdfaf6; border-right: 1px solid #e7e5e4; border-top: 1px solid #e7e5e4; border-bottom: 1px solid #e7e5e4; }
-
-        /* 成功彈窗 */
-        #success-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        #success-modal.show { display: flex; }
-
-        /* 篩選標籤 */
-        .filter-tag { border: 1px solid #e7e5e4; padding: 6px 12px; font-size: 12px; cursor: pointer; border-radius: 2px; }
+        /* 後台導覽 */
+        .admin-nav-item { padding: 16px 24px; cursor: pointer; color: #a8a29e; font-size: 13px; transition: 0.2s; border-left: 4px solid transparent; }
+        .admin-nav-item.active { background: #f8f7f6; color: #1c1917; font-weight: bold; border-left-color: var(--gold); }
+        
+        /* 前端篩選標籤 (修復點選) */
+        .filter-tag { border: 1px solid #e7e5e4; padding: 6px 14px; font-size: 12px; cursor: pointer; border-radius: 2px; transition: 0.2s; background: white; }
         .filter-tag.active { background: #1c1917; color: white; border-color: #1c1917; }
+
+        /* 業績篩選按鈕 (修復點選) */
+        .stat-filter-btn { padding: 4px 14px; font-size: 10px; cursor: pointer; background: #fdfdfc; color: #a8a29e; transition: 0.2s; }
+        .stat-filter-btn.active { background: #f8f7f6; color: #1c1917; font-weight: bold; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -40,7 +40,7 @@
         <div class="max-w-7xl mx-auto w-full flex justify-between items-center">
             <div onclick="navigateTo('home')" class="cursor-pointer flex items-center gap-3">
                 <div class="h-12 w-12 border border-stone-200 rounded-full flex items-center justify-center bg-white overflow-hidden">
-                    <img src="https://ui-avatars.com/api/?name=H&background=fff&color=b4a082" alt="Logo" class="w-full h-full object-cover">
+                    <img src="logo.png" alt="Logo" class="w-full h-full object-cover">
                 </div>
                 <div>
                     <h1 class="font-bold text-sm tracking-tight">涵軒雅敘</h1>
@@ -61,6 +61,7 @@
             <div class="flex flex-col gap-8 mb-16">
                 <h3 onclick="navigateTo('realestate')" class="text-3xl font-bold serif cursor-pointer hover:pl-2 transition-all">房地產資訊</h3>
                 <h3 onclick="navigateTo('booking')" class="text-3xl font-bold serif cursor-pointer hover:pl-2 transition-all">預約辦公室</h3>
+                <h3 onclick="navigateTo('login')" class="text-3xl font-bold serif cursor-pointer hover:pl-2 transition-all text-stone-300">管理控制中心</h3>
             </div>
 
             <div class="mt-auto border-2 border-stone-900 p-6 relative">
@@ -76,181 +77,152 @@
         </div>
     </div>
 
-    <div id="success-modal">
-        <div class="bg-white max-w-md w-full p-8 rounded-sm shadow-2xl relative">
-            <h3 class="serif text-xl font-bold mb-6 text-center">預約申請已提交</h3>
-            <div class="space-y-5 text-sm leading-relaxed text-stone-600">
-                <p>請您匯款預約時段之金額至此帳戶：<br><span class="text-[10px] text-stone-400 italic">(請於備註欄填寫預約者全名)</span></p>
-                <div class="bg-stone-50 p-5 border border-stone-100">
-                    <p class="font-bold text-stone-800">銀行代碼：822 中國信託</p>
-                    <div class="flex justify-between items-center mt-2">
-                        <p class="font-bold text-stone-800 tracking-wider">帳號：4735 4064 2102</p>
-                        <button onclick="copyAccount()" class="text-[10px] bg-stone-900 text-white px-3 py-1 uppercase">複製帳號</button>
-                    </div>
-                </div>
-                <p>匯款後請提供匯款畫面傳至官方LINE供查帳。<br>✅ 之後會給您一組專屬進出密碼。</p>
-                <div class="bg-amber-50 p-4 border border-amber-100 text-amber-900">
-                    <p class="font-bold mb-1">🏮 期間限定活動</p>
-                    <p class="text-xs">凡包日方案 Google 留下五星好評現折 <span class="font-bold">50元</span> (折後 250 元)。評論一次，之後每次皆可折價！</p>
-                </div>
-            </div>
-            <button onclick="closeModal()" class="w-full mt-8 border border-stone-900 py-4 text-xs font-bold tracking-widest uppercase">確認並返回</button>
-        </div>
-    </div>
-
     <main>
-        <section id="page-home" class="page-view active max-w-7xl mx-auto px-6 py-24 text-center">
-            <h2 class="text-5xl md:text-8xl font-bold serif leading-tight mb-16 tracking-tighter text-stone-900">構築空間的<br><span class="text-stone-300 italic font-light">精緻對話</span></h2>
-            <div class="flex flex-col md:flex-row justify-center gap-6">
-                <button onclick="navigateTo('realestate')" class="bg-stone-900 text-white px-16 py-6 text-xs font-bold tracking-[0.3em] uppercase">房地產物件</button>
-                <button onclick="navigateTo('booking')" class="border border-stone-200 text-stone-800 px-16 py-6 text-xs font-bold tracking-[0.3em] uppercase">預約辦公室</button>
-            </div>
-        </section>
-
         <section id="page-realestate" class="page-view max-w-6xl mx-auto px-6 pb-24">
             <div class="mb-12 border-b pb-8">
-                <h2 class="text-3xl font-bold serif mb-8">房地產物件搜尋</h2>
+                <h2 class="text-3xl font-bold serif mb-8 px-2">房地產物件搜尋</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-stone-400 uppercase">物件類型</label>
+                    <div class="space-y-2 px-2">
+                        <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">1. 物件類型 (Type)</label>
                         <div class="flex flex-wrap gap-2">
-                            <span class="filter-tag active">全部</span><span class="filter-tag">大樓</span><span class="filter-tag">華廈</span><span class="filter-tag">透天</span><span class="filter-tag">土地</span>
+                            <span onclick="selectFilter(this)" class="filter-tag active">全部</span>
+                            <span onclick="selectFilter(this)" class="filter-tag">大樓</span>
+                            <span onclick="selectFilter(this)" class="filter-tag">華廈</span>
+                            <span onclick="selectFilter(this)" class="filter-tag">公寓</span>
+                            <span onclick="selectFilter(this)" class="filter-tag">透天</span>
+                            <span onclick="selectFilter(this)" class="filter-tag">套房</span>
+                            <span onclick="selectFilter(this)" class="filter-tag">商辦</span>
+                            <span onclick="selectFilter(this)" class="filter-tag">土地</span>
                         </div>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-bold text-stone-400 uppercase">車位需求</label>
+                    <div class="space-y-2 px-2">
+                        <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">2. 車位需求 (Parking)</label>
                         <div class="flex gap-2">
-                            <span class="filter-tag">平面車位</span><span class="filter-tag">機械車位</span>
+                            <span onclick="selectFilter(this)" class="filter-tag">平面車位</span>
+                            <span onclick="selectFilter(this)" class="filter-tag">機械車位</span>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1"><label class="text-[10px] font-bold text-stone-400 uppercase">最高預算(萬)</label><input type="number" class="art-input" placeholder="不限"></div>
-                        <div class="space-y-1"><label class="text-[10px] font-bold text-stone-400 uppercase">最少房數</label><input type="number" class="art-input" placeholder="不限"></div>
+                    <div class="grid grid-cols-2 gap-4 px-2">
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-stone-400 uppercase">屋齡 (age)</label><input type="number" class="art-input" placeholder="不限"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-stone-400 uppercase">最高總價(萬)</label><input type="number" class="art-input" placeholder="不限"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-stone-400 uppercase">客廳 (living)</label><input type="number" class="art-input" placeholder="不限"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-stone-400 uppercase">衛浴 (bath)</label><input type="number" class="art-input" placeholder="不限"></div>
                     </div>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div class="group cursor-pointer">
-                    <div class="aspect-[16/10] bg-stone-100 overflow-hidden mb-4 relative">
-                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                    </div>
-                    <h3 class="serif text-xl font-bold mb-1">精品景觀大樓</h3>
-                    <p class="text-xs text-stone-400">3房2廳2衛 | 45.2坪 | 平面車位 | 2,850 萬</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="page-booking" class="page-view max-w-3xl mx-auto px-6 pb-24">
-            <div class="mb-12 aspect-video bg-stone-100 overflow-hidden rounded-sm relative">
-                <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
-                    <h2 class="text-white text-4xl font-bold serif tracking-widest">Office Environment</h2>
                 </div>
             </div>
             
-            <div class="bg-white border p-8 md:p-12 space-y-10">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300 uppercase">預約人姓名</label><input type="text" id="b-name" class="art-input" placeholder="請填寫全名"></div>
-                    <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300 uppercase">聯絡電話</label><input type="text" id="b-phone" class="art-input" placeholder="09XX-XXX-XXX"></div>
-                    <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300 uppercase">LINE ID / Email</label><input type="text" id="b-contact" class="art-input"></div>
-                    <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300 uppercase">預約日期</label><input type="date" id="b-date" class="art-input"></div>
-                </div>
-
-                <div class="space-y-4">
-                    <label class="text-[10px] font-bold text-stone-300 uppercase">選擇預約方案</label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div onclick="selectPlan(this)" class="plan-pill selected">
-                            <p class="font-bold">A. 包日 300 元</p><p class="text-[10px] opacity-60">09:00 - 00:00</p>
-                        </div>
-                        <div onclick="selectPlan(this)" class="plan-pill">
-                            <p class="font-bold">B. 白天 200 元</p><p class="text-[10px] opacity-60">09:00 - 18:00</p>
-                        </div>
-                        <div onclick="selectPlan(this)" class="plan-pill">
-                            <p class="font-bold">C. 夜間 99 元</p><p class="text-[10px] opacity-60">18:00 - 22:00</p>
-                        </div>
-                        <div onclick="selectPlan(this)" class="plan-pill">
-                            <p class="font-bold">D. 夜間延長 150 元</p><p class="text-[10px] opacity-60">18:00 - 00:00</p>
-                        </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="group cursor-pointer">
+                    <div class="aspect-[16/10] bg-stone-100 overflow-hidden mb-4 relative rounded-sm">
+                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                     </div>
-                </div>
-                <button onclick="submitBooking()" class="w-full bg-stone-900 text-white py-6 text-xs font-bold tracking-[0.5em] uppercase shadow-xl mt-4">提交預約申請 SUBMIT</button>
-            </div>
-        </section>
-
-        <section id="page-login" class="page-view max-w-md mx-auto px-8 pt-20">
-            <div class="bg-white p-10 border shadow-2xl">
-                <h3 class="serif text-xl font-bold mb-10 text-center uppercase tracking-widest">Admin Login</h3>
-                <div class="space-y-8">
-                    <input type="text" id="adm-u" placeholder="Account" class="art-input">
-                    <input type="password" id="adm-p" placeholder="Password" class="art-input">
-                    <button onclick="handleLogin()" class="w-full bg-stone-900 text-white py-5 text-xs font-bold tracking-widest uppercase">Login</button>
+                    <h3 class="serif text-xl font-bold mb-1">精品景觀大樓</h3>
+                    <p class="text-xs text-stone-400">3房2廳2衛 | 屋齡 5年 | 45.2坪 | 機械車位 | 2,850 萬</p>
                 </div>
             </div>
         </section>
 
         <section id="page-admin" class="page-view max-w-6xl mx-auto px-6 pb-32">
+            <h2 class="text-2xl font-bold serif mb-8">控制中心</h2>
             <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-64 flex flex-col bg-white border border-stone-100">
-                    <div onclick="switchAdminTab('upload', this)" class="admin-nav-item p-5 cursor-pointer border-l-4 border-transparent active border-stone-900 bg-stone-50 font-bold text-sm">房地產物件發佈</div>
-                    <div onclick="switchAdminTab('list', this)" class="admin-nav-item p-5 cursor-pointer border-l-4 border-transparent text-stone-400 text-sm">預約資料核對</div>
-                    <div onclick="switchAdminTab('stat', this)" class="admin-nav-item p-5 cursor-pointer border-l-4 border-transparent text-stone-400 text-sm">業績統計看板</div>
+                <div class="md:w-64 flex flex-col bg-white border border-stone-50">
+                    <div onclick="switchAdminTab('upload', this)" class="admin-nav-item active">房地產物件發佈</div>
+                    <div onclick="switchAdminTab('list', this)" class="admin-nav-item">預約資料核對</div>
+                    <div onclick="switchAdminTab('stat', this)" class="admin-nav-item">業績統計看板</div>
                     <button onclick="logout()" class="text-red-500 font-bold text-[10px] tracking-widest p-6 text-left mt-auto border-t">安全登出 LOGOUT</button>
                 </div>
 
-                <div class="flex-1 bg-white border p-6 md:p-10 shadow-sm min-h-[600px]">
+                <div class="flex-1 bg-white border border-stone-100 p-6 md:p-10 shadow-sm min-h-[600px]">
+                    
                     <div id="adm-upload" class="admin-content space-y-10">
-                        <h3 class="serif text-xl font-bold border-b pb-5">物件資料發佈</h3>
+                        <h3 class="serif text-xl font-bold border-b pb-5">房地產物件發佈</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6">
-                            <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300">建案名稱</label><input type="text" class="art-input"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300">總價(萬)</label><input type="number" class="art-input"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300">坪數</label><input type="number" class="art-input"></div>
-                            <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300">車位數量</label><input type="number" class="art-input"></div>
-                            <div class="space-y-2">
+                            <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300">建案名稱 (title)</label><input type="text" class="art-input"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300">最高總價(wan 萬)</label><input type="number" class="art-input"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300">坪數 (ping)</label><input type="number" class="art-input"></div>
+                            <div class="space-y-1"><label class="text-[10px] font-bold text-stone-300">屋齡 (age)</label><input type="number" class="art-input"></div>
+                            <div class="space-y-2 col-span-1">
                                 <label class="text-[10px] font-bold text-stone-300 uppercase">格局 (房/廳/衛)</label>
                                 <div class="flex gap-2"><input type="number" placeholder="房" class="art-input text-center"><input type="number" placeholder="廳" class="art-input text-center"><input type="number" placeholder="衛" class="art-input text-center"></div>
                             </div>
                             <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-stone-300">車位類型</label>
+                                <label class="text-[10px] font-bold text-stone-300 uppercase">車位類型數量 (平面/機械)</label>
                                 <select class="art-input"><option>平面車位</option><option>機械車位</option></select>
                             </div>
                         </div>
-                        <div class="border-2 border-dashed border-stone-100 h-48 flex flex-col items-center justify-center text-stone-300 bg-stone-50/50 rounded-sm">
-                            <i data-lucide="image-plus" class="w-8 h-8 mb-2"></i><p class="text-[10px]">點擊上傳物件環境圖</p>
+                        <div onclick="document.getElementById('imgUpload').click()" class="border-2 border-dashed border-stone-100 h-64 flex flex-col items-center justify-center text-stone-300 bg-stone-50/20 rounded-lg cursor-pointer hover:bg-stone-50 transition-colors">
+                            <i data-lucide="image-plus" class="w-10 h-10 mb-3"></i>
+                            <p class="text-xs font-medium">點擊或拖放照片至此上傳</p>
+                            <p class="text-[9px] mt-2 text-stone-400">(第一張將自動作為封面圖)</p>
+                            <img id="preview" class="hidden absolute h-60 w-80 object-cover p-2 bg-white border shadow-xl">
+                            <input type="file" id="imgUpload" class="hidden" accept="image/*" onchange="previewImage(this)">
                         </div>
-                        <button class="w-full bg-[#b4a082] text-white py-5 text-xs font-bold tracking-widest uppercase shadow-md">發佈同步物件 PUBLISH</button>
+                        <button class="w-full bg-[#b4a082] text-white py-5 text-[11px] font-bold tracking-[0.4em] uppercase shadow-md">發佈同步物件 PUBLISH</button>
                     </div>
 
                     <div id="adm-list" class="admin-content hidden space-y-8">
-                        <div class="flex justify-between items-center border-b pb-6">
-                            <h3 class="serif text-xl font-bold">預約核對清單</h3>
-                            <button class="bg-red-500 text-white px-5 py-2 text-[10px] font-bold">+ 新增黑名單</button>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6">
+                            <h3 class="serif text-xl font-bold">預約資料與名單核對</h3>
+                            <button onclick="alert('開啟新增黑名單視窗')" class="bg-red-500 text-white px-5 py-2 text-[10px] font-bold rounded-sm shadow-sm hover:opacity-80 transition-opacity uppercase tracking-widest">+ 新增黑名單</button>
                         </div>
-                        <table class="w-full text-xs text-center">
-                            <thead class="bg-stone-50 text-stone-400"><tr><th class="py-4">名單</th><th class="py-4">方案</th><th class="py-4">日期</th><th class="py-4">狀態</th></tr></thead>
-                            <tbody id="res-list-body" class="divide-y divide-stone-50"></tbody>
-                        </table>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-center text-xs">
+                                <thead class="bg-stone-50 text-stone-400">
+                                    <tr><th class="py-5">申請人</th><th class="py-5">方案</th><th class="py-5">日期</th><th class="py-5">狀態</th><th class="py-5">操作</th></tr>
+                                </thead>
+                                <tbody id="res-list-body" class="divide-y divide-stone-50">
+                                    <tr>
+                                        <td class="py-6 font-bold">測試客戶</td>
+                                        <td class="py-6 text-stone-400">A.包日</td>
+                                        <td class="py-6 text-stone-400">2026-04-18</td>
+                                        <td class="py-6 text-orange-400 font-bold">待核對匯款</td>
+                                        <td class="py-6"><button onclick="alert('開啟編輯確認視窗')" class="font-bold underline text-stone-900">編輯確認</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
-                    <div id="adm-stat" class="admin-content hidden space-y-8">
-                        <h3 class="serif text-xl font-bold border-b pb-6">業績統計看板</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div class="bg-stone-50 p-10 text-center rounded-sm">
-                                <p class="text-[10px] text-stone-400 mb-6 uppercase tracking-widest">本時段業績總計</p>
-                                <p class="text-4xl serif font-bold text-stone-800">NT$ 12,450</p>
+                    <div id="adm-stat" class="admin-content hidden space-y-10">
+                        <div class="flex justify-between items-center border-b pb-6">
+                            <h3 class="serif text-xl font-bold">業績統計看板</h3>
+                            <div class="flex border text-[10px] bg-white rounded-sm">
+                                <span onclick="selectStatFilter(this)" class="stat-filter-btn active">日</span>
+                                <span onclick="selectStatFilter(this)" class="stat-filter-btn border-l">月</span>
+                                <span onclick="selectStatFilter(this)" class="stat-filter-btn border-l">年</span>
                             </div>
-                            <div class="bg-stone-50 p-10 text-center rounded-sm">
-                                <p class="text-[10px] text-stone-400 mb-6 uppercase tracking-widest">有效預約次數</p>
-                                <p class="text-4xl serif font-bold text-stone-800">42 <span class="text-sm">次</span></p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="stat-card border p-10 bg-stone-50 text-center">
+                                <p class="text-[10px] font-bold text-stone-400 mb-6 uppercase tracking-widest">本時段業績總計</p>
+                                <p id="stat-rev" class="text-4xl serif font-bold text-stone-800">NT$ 12,450</p>
+                            </div>
+                            <div class="stat-card border p-10 bg-stone-50 text-center">
+                                <p class="text-[10px] font-bold text-stone-400 mb-6 uppercase tracking-widest">有效預約次數</p>
+                                <p id="stat-count" class="text-4xl serif font-bold text-stone-800">42 次</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
+
+        <section id="page-login" class="page-view max-w-md mx-auto px-8 pt-20">
+            <div class="bg-white p-10 border shadow-2xl rounded-sm">
+                <h3 class="serif text-xl font-bold mb-10 text-center uppercase tracking-widest">Admin Login</h3>
+                <div class="space-y-8">
+                    <input type="text" id="adm-u" placeholder="Account" class="art-input">
+                    <input type="password" id="adm-p" placeholder="Password" class="art-input">
+                    <button onclick="handleLogin()" class="w-full bg-stone-900 text-white py-5 text-xs font-bold tracking-widest uppercase mt-4">Login</button>
+                </div>
+            </div>
+        </section>
+        <section id="page-home" class="page-view max-w-xl mx-auto px-8 py-20 text-center">首頁預留</section>
+        <section id="page-booking" class="page-view max-w-xl mx-auto px-8 py-20 text-center">預約表單預留</section>
     </main>
 
-    <footer class="py-24 px-8 border-t border-stone-100 bg-white mt-48">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-16">
+    <footer class="py-24 px-8 border-t border-stone-50 bg-white mt-48">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-12">
             <div class="space-y-6">
                 <div class="h-10 w-10 border flex items-center justify-center text-stone-900 serif opacity-30">H</div>
                 <div class="text-[11px] tracking-widest space-y-3 font-semibold text-stone-900 uppercase">
@@ -261,12 +233,10 @@
             </div>
             <div class="flex flex-col items-end gap-10">
                 <div class="flex gap-8 text-stone-300">
-                    <a href="https://www.instagram.com/hanshousetalk" class="hover:text-stone-900 transition-colors"><i data-lucide="instagram" class="w-6 h-6"></i></a>
+                    <a href="https://www.instagram.com/hanshousetalk" target="_blank" class="hover:text-stone-900 transition-colors"><i data-lucide="instagram" class="w-6 h-6"></i></a>
                     <a href="#" class="hover:text-stone-900 transition-colors"><i data-lucide="facebook" class="w-6 h-6"></i></a>
                 </div>
-                <p class="text-stone-200 text-[10px] font-bold tracking-[0.5em] uppercase">
-                    © <span onclick="navigateTo('login')" class="cursor-pointer hover:text-stone-900 transition-colors">2026</span> HAN'S HOUSETALK ALL RIGHTS RESERVED.
-                </p>
+                <p class="text-stone-100 text-[9px] font-bold tracking-[0.5em] uppercase">© 2026 HAN'S HOUSETALK ALL RIGHTS RESERVED.</p>
             </div>
         </div>
     </footer>
@@ -274,13 +244,11 @@
     <script>
         lucide.createIcons();
         let isAuth = false;
-        let bookings = [{ name: "測試客戶", plan: "A.包日", date: "2026-04-18", status: "待核對" }];
 
         function navigateTo(id) {
             document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
             const target = document.getElementById('page-' + id);
             if(target) target.classList.add('active');
-            if(id === 'admin') renderList();
             toggleSideMenu(false);
             window.scrollTo(0,0);
         }
@@ -292,36 +260,44 @@
         }
 
         function logout() { isAuth = false; navigateTo('home'); }
-        function toggleSideMenu(s) { document.getElementById('side-menu').style.transform = s ? 'translateX(0)' : 'translateX(100%)'; }
-        function selectPlan(el) { document.querySelectorAll('.plan-pill').forEach(p => p.classList.remove('selected')); el.classList.add('selected'); }
+        function toggleSideMenu(open) { document.getElementById('side-menu').style.transform = open ? 'translateX(0)' : 'translateX(100%)'; }
         
-        function submitBooking() {
-            const name = document.getElementById('b-name').value;
-            if(!name) return alert('請填寫姓名');
-            bookings.push({ name: name, plan: document.querySelector('.plan-pill.selected p').innerText, date: document.getElementById('b-date').value, status: "待核對" });
-            document.getElementById('success-modal').classList.add('show');
+        // 修復：前端篩選點選互動
+        function selectFilter(el) {
+            const container = el.parentElement;
+            container.querySelectorAll('.filter-tag').forEach(tag => tag.classList.remove('active'));
+            el.classList.add('active');
         }
 
+        // 修復：後台圖片預覽上傳
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('preview').classList.remove('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 修復：後台頁籤切換
         function switchAdminTab(id, el) {
             document.querySelectorAll('.admin-content').forEach(c => c.classList.add('hidden'));
             document.getElementById('adm-' + id).classList.remove('hidden');
-            document.querySelectorAll('.admin-nav-item').forEach(i => {
-                i.classList.remove('active', 'border-stone-900', 'bg-stone-50', 'font-bold');
-                i.classList.add('text-stone-400');
-            });
-            el.classList.add('active', 'border-stone-900', 'bg-stone-50', 'font-bold');
-            el.classList.remove('text-stone-400');
+            document.querySelectorAll('.admin-nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
         }
 
-        function renderList() {
-            document.getElementById('res-list-body').innerHTML = bookings.map(b => `
-                <tr><td class="py-5 font-bold">${b.name}</td><td class="py-5 text-stone-400">${b.plan}</td><td class="py-5 text-stone-400">${b.date}</td><td class="py-5 text-orange-400 font-bold">${b.status}</td></tr>
-            `).join('');
-        }
-
-        function closeModal() { document.getElementById('success-modal').classList.remove('show'); navigateTo('home'); }
-        function copyAccount() { 
-            navigator.clipboard.writeText("473540642102").then(() => alert("中國信託帳號已複製"));
+        // 修復：業績統計篩選點選
+        function selectStatFilter(el) {
+            document.querySelectorAll('.stat-filter-btn').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+            // 模擬切換數據
+            const text = el.innerText;
+            if(text === '日') { document.getElementById('stat-rev').innerText = 'NT$ 12,450'; document.getElementById('stat-count').innerText = '42 次'; }
+            if(text === '月') { document.getElementById('stat-rev').innerText = 'NT$ 380,100'; document.getElementById('stat-count').innerText = '1,280 次'; }
+            if(text === '年') { document.getElementById('stat-rev').innerText = 'NT$ 4,562,000'; document.getElementById('stat-count').innerText = '15,360 次'; }
         }
     </script>
 </body>
