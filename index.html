@@ -313,41 +313,124 @@
     </div>
 
     <script>
-        lucide.createIcons();
-        function navigateTo(id) {
-            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-' + id).classList.add('active');
-            toggleSideMenu(false); window.scrollTo({top: 0, behavior: 'smooth'});
+        // --- 核心變數設定 ---
+const workerUrl = 'https://hanxuan.hank30005.workers.dev'; // 確保這是你的 Cloudflare 網址
+lucide.createIcons();
+
+// --- 1. 頁面導航與初始化 ---
+function navigateTo(id) {
+    document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    toggleSideMenu(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // 如果進入房地產頁面，自動載入最新資料
+    if (id === 'realestate') loadRealEstate();
+}
+
+function toggleSideMenu(s) { 
+    document.getElementById('side-menu').style.transform = s ? 'translateX(0)' : 'translateX(100%)'; 
+}
+
+// --- 2. 登入邏輯 (admin/1234) ---
+function handleLogin() {
+    const u = document.getElementById('adm-u').value;
+    const p = document.getElementById('adm-p').value;
+    if (u === 'admin' && p === '1234') {
+        navigateTo('admin');
+    } else {
+        alert('❌ 帳號或密碼錯誤');
+    }
+}
+
+// --- 3. 房地產：從雲端載入物件 ---
+async function loadRealEstate() {
+    const container = document.querySelector('#page-realestate .grid.grid-cols-1.md\\:grid-cols-2');
+    container.innerHTML = '<div class="col-span-full py-20 text-center animate-pulse text-stone-400">正在同步最新物件...</div>';
+
+    try {
+        const response = await fetch(workerUrl);
+        const data = await response.json();
+        const items = data.results;
+
+        container.innerHTML = ''; // 清空
+        items.forEach(item => {
+            const props = item.properties;
+            const name = props["名稱"]?.title[0]?.plain_text || "精選物件";
+            const price = props["總價"]?.number || "面議";
+            const size = props["坪數"]?.number || "--";
+            const layout = `${props["房"]?.number || 0}房${props["廳"]?.number || 0}廳${props["衛"]?.number || 0}衛`;
+            const coverImg = item.cover?.external?.url || item.cover?.file?.url || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80";
+
+            container.innerHTML += `
+                <div class="group cursor-pointer">
+                    <div class="aspect-[16/9] bg-stone-100 mb-4 overflow-hidden border">
+                        <img src="${coverImg}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <h3 class="serif text-xl font-bold mb-1">${name}</h3>
+                        <p class="text-red-600 font-bold">${price}萬</p>
+                    </div>
+                    <p class="text-[10px] text-stone-400 tracking-widest uppercase">${size} 坪 | ${layout}</p>
+                </div>
+            `;
+        });
+    } catch (err) {
+        container.innerHTML = '<div class="col-span-full py-20 text-center text-red-300">資料讀取失敗，請確認 Cloudflare Worker 是否正常。</div>';
+    }
+}
+
+// --- 4. 後台：直接發佈新物件到 Notion ---
+async function submitProperty() {
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.innerText = "同步中...";
+    btn.disabled = true;
+
+    // 取得輸入值 (對應你 HTML 中的欄位)
+    const name = document.querySelector('#adm-estate input[placeholder="物件名稱"]').value;
+    const price = parseFloat(document.querySelector('#adm-estate input[placeholder="總價(萬)"]').value);
+    const size = parseFloat(document.querySelector('#adm-estate input[placeholder="坪數"]').value);
+
+    const payload = {
+        properties: {
+            "名稱": { title: [{ text: { content: name } }] },
+            "總價": { number: price },
+            "坪數": { number: size }
         }
-        function toggleSideMenu(s) { document.getElementById('side-menu').style.transform = s ? 'translateX(0)' : 'translateX(100%)'; }
-        function selectFilter(el) { el.parentElement.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
-        function showBookingSuccess() { document.getElementById('success-modal').style.display = 'flex'; }
-        function copyAcc() { navigator.clipboard.writeText("473540642102").then(() => alert("帳號已複製")); }
-        function handleLogin() {
-            const u = document.getElementById('adm-u').value;
-            const p = document.getElementById('adm-p').value;
-            if(u === '12345' && p === '12345') navigateTo('admin');
-            else alert('登入失敗，帳號或密碼錯誤');
+    };
+
+    try {
+        const res = await fetch(workerUrl, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+            alert("✅ 物件已成功發佈至雲端！");
+            location.reload();
         }
-        function switchAdminTab(id, el) {
-            document.querySelectorAll('.admin-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById('adm-' + id).classList.remove('hidden');
-            document.querySelectorAll('.admin-tab').forEach(t => { t.classList.remove('active'); t.classList.add('text-stone-400'); });
-            el.classList.add('active'); el.classList.remove('text-stone-400');
-        }
-        function handleImgPreview(files, containerId) {
-            const container = document.getElementById(containerId);
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const div = document.createElement('div');
-                    div.className = "preview-box";
-                    div.innerHTML = `<img src="${e.target.result}"><div class="img-del" onclick="this.parentElement.remove()">×</div>`;
-                    container.appendChild(div);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
+    } catch (e) {
+        alert("❌ 發佈失敗：" + e.message);
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+}
+
+// --- 5. 預約與複製 ---
+function showBookingSuccess() { document.getElementById('success-modal').style.display = 'flex'; }
+function copyAcc() { 
+    navigator.clipboard.writeText("473540642102").then(() => alert("✅ 中國信託帳號已複製")); 
+}
+
+// 管理分頁切換
+function switchAdminTab(id, el) {
+    document.querySelectorAll('.admin-content').forEach(c => c.classList.add('hidden'));
+    document.getElementById('adm-' + id).classList.remove('hidden');
+    document.querySelectorAll('.admin-tab').forEach(t => { t.classList.remove('active'); t.classList.add('text-stone-400'); });
+    el.classList.add('active'); el.classList.remove('text-stone-400');
+}
+
     </script>
 </body>
 </html>
