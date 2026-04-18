@@ -313,25 +313,49 @@
     </div>
 
     <script>
-// --- 權限驗證 ---
+// ==========================================
+// 1. 管理員權限驗證 (admin/1234)
+// ==========================================
 function handleLogin() {
     const user = document.getElementById('adm-u').value;
     const pass = document.getElementById('adm-p').value;
     if (user === "admin" && pass === "1234") {
         alert("✅ 驗證成功，進入管理看板");
-        document.getElementById('page-admin-dashboard').classList.remove('hidden');
-        navigateTo('admin-dashboard'); // 跳轉到管理區
+        // 隱藏登入區，顯示管理區
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('admin-dashboard').classList.remove('hidden');
     } else {
         alert("❌ 帳號或密碼錯誤");
     }
 }
 
-// --- 房地產：土地動態邏輯 ---
+// ==========================================
+// 2. 房地產：選「土地」才出現「使用類別」
+// ==========================================
 function checkType() {
     const type = document.getElementById('prop-type').value;
     const landUsageGroup = document.getElementById('land-usage-group');
-    // 選取類型「土地」時，自動展開使用類別文字框
-    landUsageGroup.style.display = (type === '土地') ? 'block' : 'none';
+    if (landUsageGroup) {
+        landUsageGroup.style.display = (type === '土地') ? 'block' : 'none';
+    }
+}
+
+// ==========================================
+// 3. 預約成功：匯款資訊跳窗與一鍵複製
+// ==========================================
+function showBookingSuccess() {
+    const modal = document.getElementById('success-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+    }
+}
+
+function copyBankAcc() {
+    const acc = "473540642102"; // 中國信託帳號
+    navigator.clipboard.writeText(acc).then(() => {
+        alert("✅ 帳號已複製：4735 4064 2102");
+    });
 }
 
     </script>
