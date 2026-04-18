@@ -99,7 +99,7 @@
             height: 20px; 
             border-radius: 50%; 
             display: flex; 
-            items-center: center; 
+            align-items: center; 
             justify-content: center; 
             font-size: 12px; 
             cursor: pointer; 
@@ -190,7 +190,7 @@
                 <h2 class="text-4xl md:text-5xl font-bold serif mb-4 text-stone-800 tracking-tight">打造理想的居住與工作空間</h2>
                 <p class="text-stone-400 text-sm md:text-base tracking-[0.2em] mb-12 font-medium uppercase">專業房地產經紀 × 現代共享辦公室</p>
                 <div class="aspect-[21/9] bg-stone-100 rounded-sm mb-16 shadow-lg overflow-hidden flex items-center justify-center">
-                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                    <img id="home-hero-img" src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80" class="w-full h-full object-cover">
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-5xl mx-auto">
                     <div class="p-10 border border-stone-100 bg-white hover:shadow-md transition-all group">
@@ -339,7 +339,7 @@
                             </div>
                         </div>
                         <input type="file" id="fileIn2" class="hidden" multiple accept="image/*" onchange="handleImgPreview(this.files, 'office-preview')">
-                        <button class="w-full bg-stone-900 text-white py-5 font-bold text-xs uppercase tracking-widest hover:bg-black transition-all">儲存變更</button>
+                        <button onclick="saveOfficeChanges()" class="w-full bg-stone-900 text-white py-5 font-bold text-xs uppercase tracking-widest hover:bg-black transition-all">儲存變更</button>
                     </div>
 
                     <div id="adm-stat" class="admin-content hidden space-y-10">
@@ -402,7 +402,7 @@
             </div>
             <div class="text-right flex flex-col items-end">
                 <div class="flex gap-6 mb-10 text-stone-300">
-                    <a href="https://www.instagram.com/hanshousetalk/" target="_blank" class="hover:text-pink-500 transition-colors"><i data-lucide="instagram"></i></a>
+                    <a href="https://www.instagram.com/hanshousetalk/" target="_blank" class="hover:pink-500 transition-colors"><i data-lucide="instagram"></i></a>
                     <a href="https://www.facebook.com/share/1CZjPseezJ/?mibextid=wwXIfr" target="_blank" class="hover:text-blue-600 transition-colors"><i data-lucide="facebook"></i></a>
                 </div>
                 <p class="text-[9px] text-stone-300 tracking-widest uppercase mt-2 font-medium">
@@ -560,6 +560,19 @@
                 };
                 reader.readAsDataURL(file);
             });
+        }
+
+        // 儲存辦公室環境照片變更 (並連動首頁封面)
+        function saveOfficeChanges() {
+            const officeImgs = document.querySelectorAll('#office-preview img');
+            if (officeImgs.length > 0) {
+                // 將首頁封面圖 src 替換為辦公室圖片區的第一張圖
+                const firstImgSrc = officeImgs[0].src;
+                document.getElementById('home-hero-img').src = firstImgSrc;
+                alert("✅ 首頁封面已同步更新！");
+            } else {
+                alert("目前沒有上傳任何照片。");
+            }
         }
 
         // 其他輔助函數
