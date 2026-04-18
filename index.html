@@ -313,41 +313,27 @@
     </div>
 
     <script>
-        lucide.createIcons();
-        function navigateTo(id) {
-            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-' + id).classList.add('active');
-            toggleSideMenu(false); window.scrollTo({top: 0, behavior: 'smooth'});
-        }
-        function toggleSideMenu(s) { document.getElementById('side-menu').style.transform = s ? 'translateX(0)' : 'translateX(100%)'; }
-        function selectFilter(el) { el.parentElement.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
-        function showBookingSuccess() { document.getElementById('success-modal').style.display = 'flex'; }
-        function copyAcc() { navigator.clipboard.writeText("473540642102").then(() => alert("帳號已複製")); }
-        function handleLogin() {
-            const u = document.getElementById('adm-u').value;
-            const p = document.getElementById('adm-p').value;
-            if(u === '12345' && p === '12345') navigateTo('admin');
-            else alert('登入失敗，帳號或密碼錯誤');
-        }
-        function switchAdminTab(id, el) {
-            document.querySelectorAll('.admin-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById('adm-' + id).classList.remove('hidden');
-            document.querySelectorAll('.admin-tab').forEach(t => { t.classList.remove('active'); t.classList.add('text-stone-400'); });
-            el.classList.add('active'); el.classList.remove('text-stone-400');
-        }
-        function handleImgPreview(files, containerId) {
-            const container = document.getElementById(containerId);
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const div = document.createElement('div');
-                    div.className = "preview-box";
-                    div.innerHTML = `<img src="${e.target.result}"><div class="img-del" onclick="this.parentElement.remove()">×</div>`;
-                    container.appendChild(div);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
+// --- 權限驗證 ---
+function handleLogin() {
+    const user = document.getElementById('adm-u').value;
+    const pass = document.getElementById('adm-p').value;
+    if (user === "admin" && pass === "1234") {
+        alert("✅ 驗證成功，進入管理看板");
+        document.getElementById('page-admin-dashboard').classList.remove('hidden');
+        navigateTo('admin-dashboard'); // 跳轉到管理區
+    } else {
+        alert("❌ 帳號或密碼錯誤");
+    }
+}
+
+// --- 房地產：土地動態邏輯 ---
+function checkType() {
+    const type = document.getElementById('prop-type').value;
+    const landUsageGroup = document.getElementById('land-usage-group');
+    // 選取類型「土地」時，自動展開使用類別文字框
+    landUsageGroup.style.display = (type === '土地') ? 'block' : 'none';
+}
+
     </script>
 </body>
 </html>
