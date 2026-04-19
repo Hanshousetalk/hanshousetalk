@@ -210,35 +210,41 @@
         <section id="page-realestate" class="page-view max-w-7xl mx-auto px-6 pb-24">
             <h2 class="text-3xl font-bold serif mb-10 text-stone-900">房地產物件搜尋</h2>
             
-            <div class="space-y-12 mb-16 bg-white p-10 border border-stone-50 shadow-sm">
+            <div class="space-y-12 mb-16 bg-white p-10 border border-stone-50 shadow-sm relative">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div class="space-y-3">
                         <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">1. 物件類型</label>
-                        <div class="flex flex-wrap gap-2">
-                            <span onclick="selectFilter(this)" class="filter-tag active">全部</span>
-                            <span onclick="selectFilter(this)" class="filter-tag">大樓</span>
-                            <span onclick="selectFilter(this)" class="filter-tag">華廈</span>
-                            <span onclick="selectFilter(this)" class="filter-tag">透天</span>
-                            <span onclick="selectFilter(this)" class="filter-tag">土地</span>
+                        <div id="filter-type" class="flex flex-wrap gap-2">
+                            <span onclick="selectFilter(this)" class="filter-tag active" data-value="全部">全部</span>
+                            <span onclick="selectFilter(this)" class="filter-tag" data-value="大樓">大樓</span>
+                            <span onclick="selectFilter(this)" class="filter-tag" data-value="華廈">華廈</span>
+                            <span onclick="selectFilter(this)" class="filter-tag" data-value="透天">透天</span>
+                            <span onclick="selectFilter(this)" class="filter-tag" data-value="土地">土地</span>
                         </div>
                     </div>
                     <div class="space-y-3">
                         <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">2. 車位需求</label>
-                        <div class="flex gap-2">
-                            <span onclick="selectFilter(this)" class="filter-tag">平面車位</span>
-                            <span onclick="selectFilter(this)" class="filter-tag">機械車位</span>
-                            <span onclick="selectFilter(this)" class="filter-tag">不限</span>
+                        <div id="filter-parking" class="flex gap-2">
+                            <span onclick="selectFilter(this)" class="filter-tag active" data-value="不限">不限</span>
+                            <span onclick="selectFilter(this)" class="filter-tag" data-value="平面車位">平面車位</span>
+                            <span onclick="selectFilter(this)" class="filter-tag" data-value="機械車位">機械車位</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">3. 最高預算(萬)</label><input type="number" class="art-input" placeholder="不限"></div>
-                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">4. 最低坪數</label><input type="number" class="art-input" placeholder="不限"></div>
-                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">5. 最高屋齡</label><input type="number" class="art-input" placeholder="不限"></div>
-                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">6. 最少房數</label><input type="number" class="art-input" placeholder="不限"></div>
-                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">7. 客廳數量</label><input type="number" class="art-input" placeholder="不限"></div>
-                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">8. 衛浴數量</label><input type="number" class="art-input" placeholder="不限"></div>
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">3. 最高預算(萬)</label><input type="number" id="f-price" class="art-input" placeholder="不限"></div>
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">4. 最低坪數</label><input type="number" id="f-size" class="art-input" placeholder="不限"></div>
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">5. 最高屋齡</label><input type="number" id="f-age" class="art-input" placeholder="不限"></div>
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">6. 最少房數</label><input type="number" id="f-room" class="art-input" placeholder="不限"></div>
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">7. 客廳數量</label><input type="number" id="f-hall" class="art-input" placeholder="不限"></div>
+                    <div><label class="text-[10px] font-bold text-stone-400 mb-1 block uppercase">8. 衛浴數量</label><input type="number" id="f-bath" class="art-input" placeholder="不限"></div>
+                </div>
+
+                <div class="flex justify-end pt-6 border-t border-stone-100">
+                    <button onclick="applyFilters()" class="bg-stone-900 text-white px-12 py-3 text-[11px] font-bold tracking-widest uppercase hover:bg-stone-800 transition-all flex items-center gap-2">
+                        <i data-lucide="search" class="w-3 h-3"></i> 立即篩選物件
+                    </button>
                 </div>
             </div>
 
@@ -440,6 +446,7 @@
 
     <script>
         const workerUrl = 'https://hanxuan.hank30005.workers.dev';
+        let allEstates = []; // 儲存從 Notion 抓取的所有原始資料
         lucide.createIcons();
 
         // 頁面導覽
@@ -451,64 +458,106 @@
             if (id === 'realestate') loadRealEstate();
         }
 
-        // 側邊選單開關
         function toggleSideMenu(open) { 
             const menu = document.getElementById('side-menu');
             menu.style.transform = open ? 'translateX(0)' : 'translateX(100%)'; 
         }
 
-        // 登入邏輯
         function handleLogin() {
             const u = document.getElementById('adm-u').value;
             const p = document.getElementById('adm-p').value;
-            if (u === 'admin' && p === '1234') {
-                navigateTo('admin');
-            } else {
-                alert('❌ 帳號或密碼錯誤');
-            }
+            if (u === 'admin' && p === '1234') { navigateTo('admin'); } else { alert('❌ 帳號或密碼錯誤'); }
         }
 
-        // 動態載入房地產物件
+        // 載入與初始化房地產
         async function loadRealEstate() {
             const container = document.getElementById('estate-list-container');
-            container.innerHTML = '<div class="col-span-full py-20 text-center animate-pulse text-stone-400">正在同步最新物件資料...</div>';
+            container.innerHTML = '<div class="col-span-full py-20 text-center animate-pulse text-stone-400 font-bold tracking-widest">正在同步雲端最新物件...</div>';
             
             try {
                 const response = await fetch(workerUrl);
                 const data = await response.json();
-                container.innerHTML = ''; 
-
-                data.results.forEach(item => {
-                    const p = item.properties;
-                    const name = p["名稱"]?.title[0]?.plain_text || "精選物件";
-                    const price = p["總價"]?.number || "面議";
-                    const size = p["坪數"]?.number || "--";
-                    const age = p["屋齡"]?.number || "--";
-                    const parking = p["車位"]?.select?.name || "無";
-                    const layout = `${p["房"]?.number || 0}房${p["廳"]?.number || 0}廳${p["衛"]?.number || 0}衛`;
-                    const img = item.cover?.external?.url || item.cover?.file?.url || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80";
-
-                    container.innerHTML += `
-                        <div class="group cursor-pointer">
-                            <div class="aspect-[16/9] bg-stone-100 mb-4 overflow-hidden border">
-                                <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
-                            </div>
-                            <div class="flex justify-between items-start">
-                                <h3 class="serif text-xl font-bold mb-1">${name}</h3>
-                                <p class="text-red-600 font-bold">${price}萬</p>
-                            </div>
-                            <p class="text-[10px] text-stone-400 tracking-widest uppercase">
-                                ${size} 坪 | ${layout} | ${age} 年 | ${parking}
-                            </p>
-                        </div>
-                    `;
-                });
+                allEstates = data.results; // 存入全域變數
+                renderEstates(allEstates); // 預設顯示全部
             } catch (err) {
-                container.innerHTML = '<div class="col-span-full py-20 text-center text-red-300 italic text-sm">暫時無法連線至雲端資料庫。</div>';
+                container.innerHTML = '<div class="col-span-full py-20 text-center text-red-300 italic text-sm">連線異常，請稍後再試。</div>';
             }
         }
 
-        // 發布新物件
+        // 核心渲染邏輯：將資料顯示到畫面上
+        function renderEstates(list) {
+            const container = document.getElementById('estate-list-container');
+            container.innerHTML = ''; 
+
+            if (list.length === 0) {
+                container.innerHTML = '<div class="col-span-full py-20 text-center text-stone-300">查無符合條件的物件。</div>';
+                return;
+            }
+
+            list.forEach(item => {
+                const p = item.properties;
+                const name = p["名稱"]?.title[0]?.plain_text || "精選物件";
+                const price = p["總價"]?.number || "面議";
+                const size = p["坪數"]?.number || "--";
+                const age = p["屋齡"]?.number || "--";
+                const parking = p["車位"]?.select?.name || "無";
+                const layout = `${p["房"]?.number || 0}房${p["廳"]?.number || 0}廳${p["衛"]?.number || 0}衛`;
+                const img = item.cover?.external?.url || item.cover?.file?.url || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80";
+
+                container.innerHTML += `
+                    <div class="group cursor-pointer">
+                        <div class="aspect-[16/9] bg-stone-100 mb-4 overflow-hidden border">
+                            <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
+                        </div>
+                        <div class="flex justify-between items-start">
+                            <h3 class="serif text-xl font-bold mb-1">${name}</h3>
+                            <p class="text-red-600 font-bold">${price}萬</p>
+                        </div>
+                        <p class="text-[10px] text-stone-400 tracking-widest uppercase">
+                            ${size} 坪 | ${layout} | ${age} 年 | ${parking}
+                        </p>
+                    </div>
+                `;
+            });
+        }
+
+        // 篩選執行功能（不跳頁，保留條件）
+        function applyFilters() {
+            const type = document.querySelector('#filter-type .active').dataset.value;
+            const parking = document.querySelector('#filter-parking .active').dataset.value;
+            const price = parseFloat(document.getElementById('f-price').value) || Infinity;
+            const size = parseFloat(document.getElementById('f-size').value) || 0;
+            const age = parseFloat(document.getElementById('f-age').value) || Infinity;
+            const room = parseFloat(document.getElementById('f-room').value) || 0;
+            const hall = parseFloat(document.getElementById('f-hall').value) || 0;
+            const bath = parseFloat(document.getElementById('f-bath').value) || 0;
+
+            const filtered = allEstates.filter(item => {
+                const p = item.properties;
+                const matchesType = (type === "全部" || p["車位"]?.select?.name === type); // Notion API 欄位邏輯需視資料格式調整
+                const matchesParking = (parking === "不限" || p["車位"]?.select?.name === parking);
+                const matchesPrice = (p["總價"]?.number || 0) <= price;
+                const matchesSize = (p["坪數"]?.number || 0) >= size;
+                const matchesAge = (p["屋齡"]?.number || 0) <= age;
+                const matchesRoom = (p["房"]?.number || 0) >= room;
+                const matchesHall = (p["廳"]?.number || 0) >= hall;
+                const matchesBath = (p["衛"]?.number || 0) >= bath;
+
+                return matchesParking && matchesPrice && matchesSize && matchesAge && matchesRoom && matchesHall && matchesBath;
+            });
+
+            renderEstates(filtered);
+            // 滾動到列表頂部讓使用者看結果，但不會刷新頁面
+            document.getElementById('estate-list-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // 標籤選取
+        function selectFilter(el) {
+            el.parentElement.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // (其他發布物件、預覽圖片等 JS 保持不變...)
         async function submitProperty(event) {
             const btn = event.target;
             const originalText = btn.innerText;
@@ -530,21 +579,10 @@
 
             try {
                 const res = await fetch(workerUrl, { method: 'POST', body: JSON.stringify(payload) });
-                if (res.ok) {
-                    alert("✅ 物件已成功上架 Notion 資料庫！");
-                    location.reload();
-                } else {
-                    alert("❌ 失敗：請檢查網路或 Worker 設定。");
-                }
-            } catch (e) {
-                alert("❌ 連線異常");
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
+                if (res.ok) { alert("✅ 物件已成功上架 Notion 資料庫！"); location.reload(); } else { alert("❌ 失敗：請檢查網路或 Worker 設定。"); }
+            } catch (e) { alert("❌ 連線異常"); } finally { btn.innerText = originalText; btn.disabled = false; }
         }
 
-        // 圖片預覽處理
         function handleImgPreview(files, targetId) {
             const target = document.getElementById(targetId);
             Array.from(files).forEach(file => {
@@ -552,50 +590,28 @@
                 reader.onload = (e) => {
                     const div = document.createElement('div');
                     div.className = 'preview-box';
-                    div.innerHTML = `
-                        <img src="${e.target.result}">
-                        <div class="img-del" onclick="this.parentElement.remove()">×</div>
-                    `;
+                    div.innerHTML = `<img src="${e.target.result}"><div class="img-del" onclick="this.parentElement.remove()">×</div>`;
                     target.appendChild(div);
                 };
                 reader.readAsDataURL(file);
             });
         }
 
-        // 儲存辦公室環境照片變更 (並連動首頁封面)
         function saveOfficeChanges() {
             const officeImgs = document.querySelectorAll('#office-preview img');
             if (officeImgs.length > 0) {
-                // 將首頁封面圖 src 替換為辦公室圖片區的第一張圖
-                const firstImgSrc = officeImgs[0].src;
-                document.getElementById('home-hero-img').src = firstImgSrc;
+                document.getElementById('home-hero-img').src = officeImgs[0].src;
                 alert("✅ 首頁封面已同步更新！");
-            } else {
-                alert("目前沒有上傳任何照片。");
-            }
+            } else { alert("目前沒有上傳任何照片。"); }
         }
 
-        // 其他輔助函數
         function showBookingSuccess() { document.getElementById('success-modal').style.display = 'flex'; }
-        
-        function copyAcc() { 
-            navigator.clipboard.writeText("473540642102").then(() => alert("✅ 銀行帳號已複製")); 
-        }
-
+        function copyAcc() { navigator.clipboard.writeText("473540642102").then(() => alert("✅ 銀行帳號已複製")); }
         function switchAdminTab(id, el) {
             document.querySelectorAll('.admin-content').forEach(c => c.classList.add('hidden'));
             document.getElementById('adm-' + id).classList.remove('hidden');
-            document.querySelectorAll('.admin-tab').forEach(t => { 
-                t.classList.remove('active'); 
-                t.classList.add('text-stone-400'); 
-            });
-            el.classList.add('active'); 
-            el.classList.remove('text-stone-400');
-        }
-
-        function selectFilter(el) {
-            el.parentElement.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
+            document.querySelectorAll('.admin-tab').forEach(t => { t.classList.remove('active'); t.classList.add('text-stone-400'); });
+            el.classList.add('active'); el.classList.remove('text-stone-400');
         }
     </script>
 </body>
