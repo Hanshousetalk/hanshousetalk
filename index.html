@@ -67,6 +67,17 @@
             border-color: var(--stone-800); 
         }
 
+        /* 物件詳情頁 (單獨覆蓋層) */
+        #estate-detail-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 2000;
+            overflow-y: auto;
+            padding-top: 80px;
+        }
+
         /* 後台分頁標籤 */
         .admin-tab.active { 
             background: white; 
@@ -128,7 +139,6 @@
         }
         .line-float:hover { transform: scale(1.1); filter: brightness(1.1); }
 
-        /* 隱藏滾動條但保持功能 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
@@ -157,6 +167,15 @@
             </div>
         </div>
     </nav>
+
+    <div id="estate-detail-overlay">
+        <div class="max-w-4xl mx-auto px-6 pb-20">
+            <button onclick="closeEstateDetail()" class="mb-8 flex items-center gap-2 text-stone-400 hover:text-black transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> 返回列表
+            </button>
+            <div id="detail-content"></div>
+        </div>
+    </div>
 
     <div id="side-menu" class="fixed inset-0 bg-white z-[1000] translate-x-full transition-transform duration-500 overflow-y-auto">
         <div class="p-8 flex flex-col min-h-full max-w-md ml-auto w-full border-l shadow-2xl">
@@ -458,6 +477,16 @@
             if (id === 'realestate') loadRealEstate();
         }
 
+        // 偵測網址 Hash，若有指定物件則自動開啟
+        window.addEventListener('load', () => {
+            if (window.location.hash.startsWith('#estate-')) {
+                const targetName = decodeURIComponent(window.location.hash.split('-')[1]);
+                loadRealEstate().then(() => {
+                    openEstateDetail(targetName);
+                });
+            }
+        });
+
         function toggleSideMenu(open) { 
             const menu = document.getElementById('side-menu');
             menu.style.transform = open ? 'translateX(0)' : 'translateX(100%)'; 
@@ -505,7 +534,7 @@
                 const img = item.cover?.external?.url || item.cover?.file?.url || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80";
 
                 container.innerHTML += `
-                    <div class="group cursor-pointer">
+                    <div class="group cursor-pointer" onclick="openEstateDetail('${name}')">
                         <div class="aspect-[16/9] bg-stone-100 mb-4 overflow-hidden border">
                             <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
                         </div>
@@ -521,7 +550,74 @@
             });
         }
 
-        // 篩選執行功能（不跳頁，保留條件）
+        // 開啟物件詳情單獨頁面
+        function openEstateDetail(name) {
+            const item = allEstates.find(e => e.properties["名稱"]?.title[0]?.plain_text === name);
+            if (!item) return;
+
+            const p = item.properties;
+            const price = p["總價"]?.number || "面議";
+            const size = p["坪數"]?.number || "--";
+            const age = p["屋齡"]?.number || "--";
+            const parking = p["車位"]?.select?.name || "無";
+            const layout = `${p["房"]?.number || 0}房${p["廳"]?.number || 0}廳${p["衛"]?.number || 0}衛`;
+            const img = item.cover?.external?.url || item.cover?.file?.url || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80";
+
+            // 設定網址以便分享
+            window.location.hash = `estate-${encodeURIComponent(name)}`;
+
+            const detailHtml = `
+                <div class="space-y-10">
+                    <div class="aspect-video w-full bg-stone-100 overflow-hidden shadow-2xl">
+                        <img src="${img}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-stone-100 pb-10 gap-6">
+                        <div>
+                            <h2 class="text-4xl font-bold serif mb-2">${name}</h2>
+                            <p class="text-stone-400 tracking-[0.3em] text-xs uppercase font-bold">Premium Listing</p>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <p class="text-3xl font-bold text-red-600 serif mb-2">${price} 萬</p>
+                            <button onclick="copyShareLink()" class="flex items-center gap-2 text-[10px] font-bold border border-stone-200 px-4 py-2 hover:bg-stone-50 transition-colors uppercase tracking-widest">
+                                <i data-lucide="share-2" class="w-3 h-3"></i> 分享物件給客戶
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 py-10 border-b border-stone-100 text-center">
+                        <div><p class="text-[10px] text-stone-400 uppercase font-bold mb-1">建坪</p><p class="serif font-bold">${size} 坪</p></div>
+                        <div><p class="text-[10px] text-stone-400 uppercase font-bold mb-1">格局</p><p class="serif font-bold">${layout}</p></div>
+                        <div><p class="text-[10px] text-stone-400 uppercase font-bold mb-1">屋齡</p><p class="serif font-bold">${age} 年</p></div>
+                        <div><p class="text-[10px] text-stone-400 uppercase font-bold mb-1">車位</p><p class="serif font-bold">${parking}</p></div>
+                    </div>
+                    <div class="bg-stone-50 p-10 text-center space-y-6">
+                        <p class="text-sm text-stone-500 serif italic tracking-widest leading-loose">
+                            「家，不僅是生活的場所，更是心靈的歸宿。」<br>若您對此物件感興趣，歡迎隨時聯繫專員。
+                        </p>
+                        <a href="https://lin.ee/WexkD85" target="_blank" class="inline-block bg-stone-900 text-white px-10 py-4 text-xs font-bold uppercase tracking-widest hover:bg-black transition-all">立即詢問專員</a>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('detail-content').innerHTML = detailHtml;
+            document.getElementById('estate-detail-overlay').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // 防止底層捲動
+            lucide.createIcons();
+        }
+
+        function closeEstateDetail() {
+            document.getElementById('estate-detail-overlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            window.location.hash = 'realestate';
+        }
+
+        function copyShareLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert("✅ 分享連結已複製！您可以直接傳給客戶。");
+            });
+        }
+
+        // 篩選執行功能
         function applyFilters() {
             const type = document.querySelector('#filter-type .active').dataset.value;
             const parking = document.querySelector('#filter-parking .active').dataset.value;
@@ -534,7 +630,7 @@
 
             const filtered = allEstates.filter(item => {
                 const p = item.properties;
-                const matchesType = (type === "全部" || p["車位"]?.select?.name === type); // Notion API 欄位邏輯需視資料格式調整
+                const matchesType = (type === "全部" || (p["類型"]?.select?.name || "全部") === type);
                 const matchesParking = (parking === "不限" || p["車位"]?.select?.name === parking);
                 const matchesPrice = (p["總價"]?.number || 0) <= price;
                 const matchesSize = (p["坪數"]?.number || 0) >= size;
@@ -543,21 +639,19 @@
                 const matchesHall = (p["廳"]?.number || 0) >= hall;
                 const matchesBath = (p["衛"]?.number || 0) >= bath;
 
-                return matchesParking && matchesPrice && matchesSize && matchesAge && matchesRoom && matchesHall && matchesBath;
+                return matchesType && matchesParking && matchesPrice && matchesSize && matchesAge && matchesRoom && matchesHall && matchesBath;
             });
 
             renderEstates(filtered);
-            // 滾動到列表頂部讓使用者看結果，但不會刷新頁面
             document.getElementById('estate-list-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // 標籤選取
         function selectFilter(el) {
             el.parentElement.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
         }
 
-        // (其他發布物件、預覽圖片等 JS 保持不變...)
+        // 其他功能維持不變
         async function submitProperty(event) {
             const btn = event.target;
             const originalText = btn.innerText;
@@ -616,3 +710,4 @@
     </script>
 </body>
 </html>
+
