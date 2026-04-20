@@ -6,6 +6,8 @@
     <title>涵軒雅敘 Han's HouseTalk | 專業房產與共享空間</title>
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
@@ -137,6 +139,10 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .gold-text { color: var(--gold); }
         .bg-stone-art { background-color: #fdfdfc; }
+
+        /* Swiper 客製化樣式 */
+        .swiper-button-next, .swiper-button-prev { color: white; transform: scale(0.7); }
+        .swiper-pagination-bullet-active { background: var(--gold) !important; }
     </style>
 </head>
 <body class="min-h-screen bg-stone-art">
@@ -233,9 +239,19 @@
                 <p class="max-w-2xl text-stone-500 text-sm md:text-base font-medium tracking-[0.2em] leading-loose mb-16 px-4">
                     專業房地產經紀 × 現代共享辦公室
                 </p>
-                <div class="w-full aspect-[21/9] bg-stone-100 rounded-sm mb-20 shadow-2xl overflow-hidden relative group">
-                    <img id="home-hero-img" src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
-                    <div class="absolute inset-0 bg-black/10"></div>
+                
+                <div class="w-full aspect-[21/9] bg-stone-100 rounded-sm mb-20 shadow-2xl overflow-hidden relative">
+                    <div class="swiper homeSwiper w-full h-full">
+                        <div class="swiper-wrapper" id="home-hero-swiper-wrapper">
+                            <div class="swiper-slide">
+                                <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="absolute inset-0 bg-black/10 pointer-events-none z-10"></div>
+                    </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl">
@@ -555,8 +571,22 @@
         const workerUrl = 'https://hanxuan.hank30005.workers.dev';
         let allEstates = []; 
         let currentPropImage = "";
+        
+        // Swiper 實例初始化
+        let homeSwiper;
+        function initSwiper() {
+            homeSwiper = new Swiper(".homeSwiper", {
+                loop: true,
+                pagination: { el: ".swiper-pagination", clickable: true },
+                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+                autoplay: { delay: 5000, disableOnInteraction: false },
+            });
+        }
 
-        lucide.createIcons();
+        window.onload = () => {
+            lucide.createIcons();
+            initSwiper();
+        };
 
         function navigateTo(id) {
             document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
@@ -565,6 +595,8 @@
                 target.classList.add('active');
                 toggleSideMenu(false);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                // 如果切換回首頁，更新 Swiper
+                if(id === 'home' && homeSwiper) homeSwiper.update();
             }
             if (id === 'realestate') loadRealEstate();
         }
@@ -730,11 +762,30 @@
             lucide.createIcons();
         }
 
+        // 修改處：更新首頁輪播圖邏輯
         function saveOfficeChanges() {
             const imgs = document.querySelectorAll('#office-preview img');
+            const swiperWrapper = document.getElementById('home-hero-swiper-wrapper');
+            
             if (imgs.length > 0) {
-                document.getElementById('home-hero-img').src = imgs[0].src;
-                alert("✅ 影像緩存已更新。");
+                // 清空原本的輪播圖
+                swiperWrapper.innerHTML = '';
+                
+                // 將後台的所有圖片加入輪播
+                imgs.forEach(img => {
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide';
+                    slide.innerHTML = `<img src="${img.src}" class="w-full h-full object-cover">`;
+                    swiperWrapper.appendChild(slide);
+                });
+
+                // 重新初始化 Swiper
+                if(homeSwiper) homeSwiper.destroy();
+                initSwiper();
+
+                alert("✅ 首頁輪播圖已同步更新。");
+            } else {
+                alert("請先上傳環境影像");
             }
         }
 
@@ -747,3 +798,4 @@
     </script>
 </body>
 </html>
+
