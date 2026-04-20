@@ -11,8 +11,6 @@
     <style>
         :root { 
             --gold: #b4a082; 
-            --gold-light: #d4c4ae;
-            --stone-950: #0c0a09;
             --stone-900: #1c1917;
             --stone-800: #292524; 
             --stone-600: #57534e;
@@ -20,267 +18,198 @@
             --stone-200: #e7e5e4;
             --stone-100: #f5f5f4;
             --stone-50: #fafaf9;
-            --safe-red: #ef4444;
         }
 
-        /* 核心基礎樣式 */
         body { 
             font-family: 'Noto Sans TC', sans-serif; 
             background: #fdfdfc; 
             color: #44403c; 
             scroll-behavior: smooth; 
-            line-height: 1.8;
-            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
         }
 
         h1, h2, h3, h4, .serif { font-family: 'Noto Serif TC', serif; }
 
-        /* 全局美化捲軸 (記憶點 1) */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--stone-50); }
-        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--stone-600); }
-
-        /* 頁面切換物理動畫 */
         .page-view { 
             display: none; 
             padding-top: 100px; 
-            opacity: 0;
-            transform: translateY(15px);
-            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
         }
-        .page-view.active { 
-            display: block; 
-            opacity: 1;
-            transform: translateY(0);
+        .page-view.active { display: block; }
+
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
         }
 
-        /* 導航藝術效果 */
-        .nav-link-hover {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-        .nav-link-hover::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 1px;
-            bottom: -4px;
-            left: 0;
-            background-color: var(--gold);
-            transition: width 0.4s ease;
-        }
-        .nav-link-hover:hover::after { width: 100%; }
-
-        /* 藝術輸入框 */
         .art-input { 
             border-bottom: 1px solid var(--stone-200); 
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            transition: all 0.4s ease; 
             background: transparent; 
             width: 100%; 
-            padding: 16px 0; 
+            padding: 14px 0; 
             outline: none; 
             border-radius: 0; 
-            font-size: 15px; 
+            font-size: 14px; 
             color: var(--stone-900);
         }
-        .art-input:focus { border-color: var(--gold); padding-left: 12px; background: rgba(180, 160, 130, 0.03); }
-        .art-input::placeholder { color: #d6d3d1; font-weight: 300; letter-spacing: 0.05em; }
+        .art-input:focus { 
+            border-color: var(--gold); 
+            padding-left: 8px;
+        }
+        .art-input::placeholder { color: #d6d3d1; font-weight: 300; }
 
-        /* 篩選標籤 */
         .filter-tag { 
             border: 1px solid var(--stone-200); 
-            padding: 10px 28px; 
+            padding: 8px 24px; 
             font-size: 12px; 
             cursor: pointer; 
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
             background: white; 
             color: var(--stone-600); 
             border-radius: 2px; 
-            letter-spacing: 0.15em;
-            font-weight: 500;
+            letter-spacing: 0.1em;
         }
-        .filter-tag:hover { border-color: var(--stone-900); background: var(--stone-50); }
+        .filter-tag:hover { border-color: var(--stone-400); }
         .filter-tag.active { 
             background: var(--stone-900); 
             color: white; 
             border-color: var(--stone-900); 
-            box-shadow: 0 10px 20px -10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        /* 物件卡片光影 */
-        .property-card { 
-            background: white;
-            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); 
-        }
-        .property-card:hover { 
-            transform: translateY(-12px); 
-            box-shadow: 0 30px 60px -20px rgba(28, 25, 23, 0.15); 
-        }
-
-        /* 管理端側邊欄 */
         .admin-tab {
-            border-left: 4px solid transparent;
-            padding: 20px 30px;
+            border-left: 3px solid transparent;
+            padding: 16px 24px;
             font-size: 14px;
             color: var(--stone-400);
             cursor: pointer;
-            transition: 0.4s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            letter-spacing: 0.05em;
+            transition: 0.3s;
         }
-        .admin-tab:hover { background: var(--stone-50); color: var(--stone-900); }
+        .admin-tab:hover { background: rgba(0,0,0,0.02); color: var(--stone-900); }
         .admin-tab.active { 
             background: white; 
             color: var(--stone-900); 
             font-weight: 700; 
             border-left-color: var(--stone-900);
-            box-shadow: inset 5px 0 15px -5px rgba(0,0,0,0.02);
+            box-shadow: 4px 0 15px rgba(0,0,0,0.02);
         }
 
-        /* 圖片上傳區域 */
+        .property-card {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .property-card:hover {
+            transform: translateY(-5px);
+        }
+
         .preview-box { 
             aspect-ratio: 1/1; 
             border: 1px solid var(--stone-200); 
-            background: #fff; 
-            padding: 6px; 
+            background: white; 
+            padding: 5px; 
             position: relative; 
             overflow: hidden; 
             border-radius: 4px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
         .img-del { 
-            position: absolute; top: 10px; right: 10px; 
-            background: var(--safe-red); color: white; 
-            width: 28px; height: 28px; border-radius: 50%; 
+            position: absolute; top: 8px; right: 8px; 
+            background: rgba(239, 68, 68, 0.9); color: white; 
+            width: 24px; height: 24px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            font-size: 16px; cursor: pointer; opacity: 0; transition: 0.3s; 
-            z-index: 10;
+            font-size: 14px; cursor: pointer; opacity: 0; transition: 0.2s; 
         }
         .preview-box:hover .img-del { opacity: 1; }
 
-        /* LINE 浮動按鈕高度自定義 */
         .line-float { 
             position: fixed; bottom: 40px; right: 40px; 
             background: #06C755; color: white; 
-            width: 68px; height: 68px; border-radius: 50%; 
+            width: 64px; height: 64px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 15px 35px rgba(6,199,85,0.4); 
-            z-index: 999; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 0 8px 24px rgba(6,199,85,0.3); 
+            z-index: 999; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         }
-        .line-float:hover { transform: scale(1.15) rotate(10deg); box-shadow: 0 20px 45px rgba(6,199,85,0.5); }
+        .line-float:hover { transform: scale(1.1) rotate(5deg); }
 
-        /* 特殊金色文字 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
         .gold-text { color: var(--gold); }
-        .bg-gold { background-color: var(--gold); }
-        
-        /* 骨架屏動畫 */
-        @keyframes shimmer { 
-            0% { background-position: -468px 0; } 
-            100% { background-position: 468px 0; } 
-        }
-        .skeleton {
-            background: #f6f7f8;
-            background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
-            background-repeat: no-repeat;
-            background-size: 800px 104px;
-            animation-duration: 1.2s;
-            animation-fill-mode: forwards;
-            animation-iteration-count: infinite;
-            animation-name: shimmer;
-            animation-timing-function: linear;
-        }
-
-        /* Notion 狀態樣式提升 */
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 99px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
+        .bg-stone-art { background-color: #fdfdfc; }
     </style>
 </head>
-<body class="min-h-screen selection:bg-[#b4a082] selection:text-white">
+<body class="min-h-screen bg-stone-art">
 
-    <a href="https://lin.ee/WexkD85" target="_blank" class="line-float" title="即刻聯絡鄭先生">
-        <i data-lucide="message-circle" class="w-9 h-9 fill-current"></i>
+    <a href="https://lin.ee/WexkD85" target="_blank" class="line-float" title="LINE 諮詢">
+        <i data-lucide="message-circle" class="w-8 h-8 fill-current"></i>
     </a>
 
-    <nav class="fixed top-0 w-full z-[100] bg-white/90 backdrop-blur-2xl border-b border-stone-100 h-24 flex items-center px-8 transition-all duration-500">
+    <nav class="fixed top-0 w-full z-[100] bg-white/80 backdrop-blur-xl border-b border-stone-100 h-24 flex items-center px-8">
         <div class="max-w-7xl mx-auto w-full flex justify-between items-center">
-            <div onclick="navigateTo('home')" class="cursor-pointer flex items-center gap-5 group">
-                <div class="h-16 w-16 border border-stone-100 rounded-full flex items-center justify-center bg-white shadow-sm group-hover:border-stone-900 group-hover:rotate-[360deg] transition-all duration-1000 overflow-hidden">
+            <div onclick="navigateTo('home')" class="cursor-pointer flex items-center gap-4 group">
+                <div class="h-14 w-14 border border-stone-200 rounded-full flex items-center justify-center bg-white overflow-hidden shadow-sm group-hover:border-stone-900 transition-all">
                     <img src="logo.png" alt="Han's Logo" class="w-full h-full object-cover">
                 </div>
-                <div class="flex flex-col">
-                    <h1 class="font-bold text-xl tracking-[0.2em] text-stone-900">涵軒雅敘</h1>
-                    <p class="text-[9px] text-stone-400 uppercase tracking-[0.5em] font-bold">Han's HouseTalk</p>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wider text-stone-900">涵軒雅敘</h1>
+                    <p class="text-[8px] text-[#b4a082] uppercase tracking-[0.4em] font-bold">Han's HouseTalk</p>
                 </div>
             </div>
-            
-            <div class="flex items-center gap-10">
-                <div class="hidden lg:flex items-center gap-8 text-[11px] font-bold tracking-[0.3em] uppercase">
-                    <a onclick="navigateTo('realestate')" class="nav-link-hover cursor-pointer text-stone-600 hover:text-stone-900">房產物件</a>
-                    <a onclick="navigateTo('booking')" class="nav-link-hover cursor-pointer text-red-500 hover:text-red-700 underline underline-offset-8 decoration-red-200">立即預約空間</a>
-                </div>
-                <button onclick="toggleSideMenu(true)" class="p-4 hover:bg-stone-50 rounded-full transition-all group">
-                    <i data-lucide="align-right" class="w-8 h-8 text-stone-800 group-hover:scale-110"></i>
+            <div class="flex items-center gap-8">
+                <button onclick="navigateTo('booking')" class="hidden md:block text-[11px] font-bold text-red-500 tracking-[0.2em] uppercase border-b border-red-200 pb-1 hover:text-red-700 hover:border-red-700 transition-all">預約辦公室</button>
+                <button onclick="toggleSideMenu(true)" class="p-3 hover:bg-stone-50 rounded-full transition-colors">
+                    <i data-lucide="menu" class="w-7 h-7 text-stone-800"></i>
                 </button>
             </div>
         </div>
     </nav>
 
-    <div id="side-menu" class="fixed inset-0 bg-white z-[1000] translate-x-full transition-transform duration-1000 cubic-bezier(0.85, 0, 0.15, 1) overflow-hidden">
-        <div class="flex flex-col lg:flex-row h-full">
-            <div class="hidden lg:flex w-1/3 bg-stone-900 p-20 flex-col justify-between relative overflow-hidden">
-                <div class="absolute -bottom-20 -left-20 text-[20vw] font-serif text-white/5 pointer-events-none select-none">HAN</div>
-                <div>
-                    <div class="h-1 w-20 bg-gold mb-12"></div>
-                    <p class="text-stone-400 text-sm tracking-[0.4em] leading-loose">我們深信，好的空間能承載夢想，<br>而精準的服務能成就未來。</p>
-                </div>
+    <div id="side-menu" class="fixed inset-0 bg-white z-[1000] translate-x-full transition-transform duration-700 ease-in-out overflow-y-auto">
+        <div class="flex flex-col md:flex-row h-full">
+            <div class="hidden md:block w-1/3 bg-stone-50 border-r border-stone-100 p-12 flex flex-col justify-between">
+                <div class="serif text-stone-200 text-8xl opacity-50">HAN</div>
                 <div class="space-y-6">
-                    <p class="text-white text-[10px] tracking-[0.6em] uppercase opacity-50">Follow Our Journey</p>
-                    <div class="flex gap-6 text-white/60">
-                        <i data-lucide="instagram" class="w-5 h-5 hover:text-gold cursor-pointer transition-colors"></i>
-                        <i data-lucide="facebook" class="w-5 h-5 hover:text-gold cursor-pointer transition-colors"></i>
-                    </div>
+                    <p class="text-xs text-stone-400 tracking-[0.3em] uppercase leading-relaxed">
+                        提供專業的房地產媒合服務<br>與極致安靜的工作場域。
+                    </p>
                 </div>
             </div>
-
-            <div class="flex-1 p-12 lg:p-32 flex flex-col relative">
-                <div class="flex justify-end mb-20">
-                    <button onclick="toggleSideMenu(false)" class="group flex items-center gap-4 text-stone-300 hover:text-stone-900 transition-all">
-                        <span class="text-[10px] font-bold tracking-[0.4em] uppercase opacity-0 group-hover:opacity-100 transition-opacity">Close Menu</span>
-                        <i data-lucide="x" class="w-12 h-12"></i>
+            <div class="flex-1 p-12 md:p-24 flex flex-col">
+                <div class="flex justify-end mb-12">
+                    <button onclick="toggleSideMenu(false)" class="group flex items-center gap-2 text-stone-300 hover:text-stone-900 transition-all">
+                        <span class="text-[10px] font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-all">Close</span>
+                        <i data-lucide="x" class="w-10 h-10"></i>
                     </button>
                 </div>
-                
-                <nav class="flex flex-col gap-12">
-                    <div onclick="navigateTo('home')" class="group cursor-pointer">
-                        <h3 class="text-5xl lg:text-7xl font-bold serif text-stone-200 group-hover:text-stone-900 group-hover:pl-8 transition-all duration-700">首頁 <span class="text-sm font-sans font-light tracking-widest text-stone-300 ml-6 italic opacity-0 group-hover:opacity-100">HOME</span></h3>
+                <nav class="flex flex-col gap-10">
+                    <div class="overflow-hidden">
+                        <h3 onclick="navigateTo('home')" class="text-4xl md:text-5xl font-bold serif cursor-pointer hover:translate-x-4 transition-transform duration-500">首頁 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">HOME</span></h3>
                     </div>
-                    <div onclick="navigateTo('realestate')" class="group cursor-pointer">
-                        <h3 class="text-5xl lg:text-7xl font-bold serif text-stone-200 group-hover:text-stone-900 group-hover:pl-8 transition-all duration-700">精選物件 <span class="text-sm font-sans font-light tracking-widest text-stone-300 ml-6 italic opacity-0 group-hover:opacity-100">REAL ESTATE</span></h3>
+                    <div class="overflow-hidden">
+                        <h3 onclick="navigateTo('realestate')" class="text-4xl md:text-5xl font-bold serif cursor-pointer hover:translate-x-4 transition-transform duration-500">房地產物件 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">ESTATE</span></h3>
                     </div>
-                    <div onclick="navigateTo('booking')" class="group cursor-pointer">
-                        <h3 class="text-5xl lg:text-7xl font-bold serif text-stone-200 group-hover:text-stone-900 group-hover:pl-8 transition-all duration-700">預約辦公 <span class="text-sm font-sans font-light tracking-widest text-stone-300 ml-6 italic opacity-0 group-hover:opacity-100">RESERVATION</span></h3>
+                    <div class="overflow-hidden">
+                        <h3 onclick="navigateTo('booking')" class="text-4xl md:text-5xl font-bold serif cursor-pointer hover:translate-x-4 transition-transform duration-500">共享辦公室 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">OFFICE</span></h3>
                     </div>
                 </nav>
-
-                <div class="mt-auto pt-20 border-t border-stone-100 flex flex-col lg:flex-row gap-16 items-start lg:items-center">
-                    <div class="w-40 h-40 bg-stone-100 overflow-hidden rounded-full border-4 border-white shadow-xl">
-                        <img src="image_3.png" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000">
+                
+                <div class="mt-24 border-t border-stone-100 pt-16 flex flex-col md:flex-row gap-12 items-start">
+                    <div class="relative">
+                        <div class="w-32 h-32 bg-stone-200 grayscale hover:grayscale-0 transition-all duration-700 overflow-hidden rounded-sm">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80" alt="鄭梓言" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 bg-stone-900 text-white text-[8px] px-2 py-1 tracking-tighter uppercase font-bold">Real Estate Expert</div>
                     </div>
-                    <div class="space-y-6">
-                        <h4 class="text-4xl font-bold serif tracking-widest text-stone-900">鄭梓言 <span class="text-xs font-sans text-gold font-bold ml-4 uppercase tracking-widest italic">Founder & Broker</span></h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-xs tracking-widest text-stone-500 font-medium">
-                            <a href="tel:0979025379" class="flex items-center gap-4 hover:text-stone-900 transition-colors"><i data-lucide="phone" class="w-4 h-4 text-gold"></i> 0979-025-379</a>
-                            <a href="mailto:hanshousetalk@gmail.com" class="flex items-center gap-4 hover:text-stone-900 transition-colors"><i data-lucide="mail" class="w-4 h-4 text-gold"></i> hanshousetalk@gmail.com</a>
-                            <p class="flex items-center gap-4"><i data-lucide="map-pin" class="w-4 h-4 text-gold"></i> 臺中市西區台灣大道二段</p>
+                    <div class="space-y-4">
+                        <h4 class="text-3xl font-bold serif tracking-widest">鄭梓言 <span class="text-xs font-sans text-stone-400 font-normal">CHENG TZU YEN</span></h4>
+                        <div class="grid grid-cols-1 gap-3 text-xs tracking-widest text-stone-500">
+                            <a href="tel:0979025379" class="flex items-center gap-3 hover:text-stone-900 transition-colors">
+                                <i data-lucide="phone" class="w-4 h-4 text-stone-300"></i> 0979-025-379
+                            </a>
+                            <a href="mailto:hanshousetalk@gmail.com" class="flex items-center gap-3 hover:text-stone-900 transition-colors">
+                                <i data-lucide="mail" class="w-4 h-4 text-stone-300"></i> hanshousetalk@gmail.com
+                            </a>
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-stone-300"></i> 臺中市西區台灣大道二段375號9樓之2
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -289,83 +218,61 @@
     </div>
 
     <main>
-        
         <section id="page-home" class="page-view active max-w-7xl mx-auto px-8 pb-32">
-            <div class="flex flex-col items-center py-20">
-                <div class="mb-10 animate-fade-in flex items-center gap-4">
-                    <span class="h-[1px] w-12 bg-stone-200"></span>
-                    <span class="text-[10px] font-bold tracking-[0.8em] text-gold uppercase">Efficiency & Aesthetics</span>
-                    <span class="h-[1px] w-12 bg-stone-200"></span>
+            <div class="flex flex-col items-center text-center py-20">
+                <div class="mb-6 inline-block border-y border-stone-200 py-2 px-6">
+                    <span class="text-[10px] font-bold tracking-[0.5em] text-stone-400 uppercase">Premium Real Estate & Workspace</span>
                 </div>
-
-                <div class="text-center space-y-8 mb-24">
-                    <h2 class="text-6xl lg:text-8xl font-bold serif text-stone-900 leading-[1.1] tracking-tight">
-                        打造理想的居住與工作空間<br>
-                        <span class="gold-text italic block mt-4">專業房地產經紀 × 現代共享辦公室</span>
-                    </h2>
-                    <p class="text-stone-400 max-w-2xl mx-auto text-sm tracking-widest leading-relaxed font-light">
-                        我們為您篩選全台中最具潛力的物件，並在繁忙的城市核心，<br>
-                        為追求卓越的您準備了一座靜謐且充滿靈感的獨立辦公場域。
-                    </p>
+                <h2 class="text-5xl md:text-7xl font-bold serif mb-8 text-stone-900 leading-tight">打造理想的<br><span class="gold-text">居住與工作空間</span></h2>
+                <p class="max-w-2xl text-stone-500 text-sm md:text-base font-medium tracking-[0.2em] leading-loose mb-16 px-4">
+                    專業房地產經紀 × 現代共享辦公室
+                </p>
+                <div class="w-full aspect-[21/9] bg-stone-100 rounded-sm mb-20 shadow-2xl overflow-hidden relative group">
+                    <img id="home-hero-img" src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
+                    <div class="absolute inset-0 bg-black/10"></div>
                 </div>
-
-                <div class="w-full relative group">
-                    <div class="absolute -inset-4 bg-stone-100 rounded-sm -z-10 group-hover:inset-0 transition-all duration-700"></div>
-                    <div class="w-full aspect-[21/9] bg-stone-100 rounded-sm shadow-2xl overflow-hidden relative">
-                        <img id="home-hero-img" src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80" 
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[3s] ease-out">
-                        <div class="absolute inset-0 bg-gradient-to-t from-stone-900/40 to-transparent opacity-60"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl">
+                    <div onclick="navigateTo('realestate')" class="relative p-12 bg-white border border-stone-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer text-left">
+                        <div class="absolute top-0 right-0 p-8 text-stone-100 serif text-6xl group-hover:text-stone-50">01</div>
+                        <h4 class="serif font-bold text-2xl mb-4 text-stone-900">房地產買賣仲介</h4>
+                        <p class="text-xs text-stone-400 leading-loose mb-10">台中、高雄精選物件。不管是首購成家、換屋需求或是資產配置，我們提供最專業且透明的市場洞察，助您精準決策。</p>
+                        <span class="inline-flex items-center gap-3 text-[10px] font-bold tracking-widest uppercase border-b-2 border-stone-900 pb-1 group-hover:text-[#b4a082] group-hover:border-[#b4a082] transition-all">
+                            探索精選物件 <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </span>
                     </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 w-full max-w-6xl mt-32">
-                    <div onclick="navigateTo('realestate')" class="relative p-16 bg-white border border-stone-100 shadow-sm hover:shadow-2xl transition-all cursor-pointer group overflow-hidden">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-stone-50 rounded-bl-full translate-x-10 -translate-y-10 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-700"></div>
-                        <i data-lucide="key-round" class="w-12 h-12 text-gold mb-10 group-hover:rotate-45 transition-transform duration-500"></i>
-                        <h4 class="serif font-bold text-3xl mb-6 text-stone-900">房地產買賣仲介</h4>
-                        <p class="text-sm text-stone-400 leading-loose mb-12 font-light">從市場數據分析到成交後的空間建議，我們提供的不只是交易，更是對未來生活的提案。</p>
-                        <div class="flex items-center gap-4 text-[11px] font-bold tracking-[0.4em] uppercase border-b-2 border-stone-900 pb-2 w-fit group-hover:text-gold group-hover:border-gold transition-all">
-                            瀏覽精選案件 <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-
-                    <div onclick="navigateTo('booking')" class="relative p-16 bg-stone-900 text-white shadow-xl hover:shadow-2xl transition-all cursor-pointer group">
-                        <div class="absolute bottom-0 left-0 w-full h-1 bg-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
-                        <i data-lucide="coffee" class="w-12 h-12 text-gold mb-10"></i>
-                        <h4 class="serif font-bold text-3xl mb-6">現代共享辦公空間</h4>
-                        <p class="text-sm text-stone-300/80 leading-loose mb-12 font-light">位於台中台灣大道二段，配備獨立密碼鎖與 24H 門禁，提供您最專業且不受干擾的創作空間。</p>
-                        <div class="flex items-center gap-4 text-[11px] font-bold tracking-[0.4em] uppercase border-b-2 border-white pb-2 w-fit group-hover:text-gold group-hover:border-gold transition-all">
-                            立即獲取密碼 <i data-lucide="unlock" class="w-4 h-4"></i>
-                        </div>
+                    <div onclick="navigateTo('booking')" class="relative p-12 bg-stone-900 text-white shadow-lg hover:shadow-2xl transition-all group cursor-pointer text-left">
+                        <div class="absolute top-0 right-0 p-8 text-white/5 serif text-6xl group-hover:text-white/10">02</div>
+                        <h4 class="serif font-bold text-2xl mb-4">現代共享辦公空間</h4>
+                        <p class="text-xs text-stone-400 leading-loose mb-10">位於台灣大道核心地段，提供包日、夜間等靈活預約方案。配備高速網路與靜謐環境，專為獨立工作者與創業者打造。</p>
+                        <span class="inline-flex items-center gap-3 text-[10px] font-bold tracking-widest uppercase border-b-2 border-white pb-1 group-hover:text-[#b4a082] group-hover:border-[#b4a082] transition-all">
+                            立即預約時段 <i data-lucide="calendar" class="w-3 h-3"></i>
+                        </span>
                     </div>
                 </div>
             </div>
         </section>
 
         <section id="page-realestate" class="page-view max-w-7xl mx-auto px-8 pb-32">
-            <div class="flex flex-col lg:flex-row justify-between items-end mb-20 gap-10">
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3">
-                        <span class="w-8 h-[1px] bg-gold"></span>
-                        <span class="text-[10px] font-bold tracking-[0.5em] text-gold uppercase">Portfolio Selection</span>
-                    </div>
-                    <h2 class="text-5xl font-bold serif text-stone-900">尋找您的理想居所</h2>
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+                <div>
+                    <span class="text-[10px] font-bold tracking-[0.3em] text-[#b4a082] uppercase mb-2 block">Premium Properties</span>
+                    <h2 class="text-4xl font-bold serif text-stone-900">尋找您的理想居所</h2>
                 </div>
-                <div class="text-stone-400 text-[11px] tracking-[0.3em] uppercase flex items-center gap-6">
-                    <span id="prop-count" class="font-bold text-stone-900">檢索中...</span>
-                    <div class="h-[1px] w-24 bg-stone-200"></div>
+                <div class="text-stone-400 text-[10px] tracking-widest uppercase flex items-center gap-4">
+                    <span id="prop-count">顯示 0 個物件</span>
+                    <div class="h-[1px] w-20 bg-stone-200"></div>
                 </div>
             </div>
             
-            <div class="bg-white p-12 lg:p-16 border border-stone-100 shadow-xl mb-24 relative overflow-hidden group">
-                <div class="absolute top-0 left-0 w-2 h-full bg-stone-900 group-hover:bg-gold transition-colors duration-500"></div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16">
-                    <div class="space-y-6">
-                        <label class="text-[11px] font-bold text-stone-900 uppercase tracking-[0.3em] flex items-center gap-3">
-                            <i data-lucide="building-2" class="w-4 h-4"></i> 物件類型 Property Type
+            <div class="bg-white p-10 border border-stone-100 shadow-sm mb-20 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-stone-900"></div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+                    <div class="space-y-4">
+                        <label class="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <i data-lucide="home" class="w-3 h-3"></i> 01. 物件類型
                         </label>
-                        <div id="filter-type" class="flex flex-wrap gap-3">
+                        <div id="filter-type" class="flex flex-wrap gap-2">
                             <span onclick="selectFilter(this)" class="filter-tag active" data-value="全部">全部</span>
                             <span onclick="selectFilter(this)" class="filter-tag" data-value="大樓">大樓</span>
                             <span onclick="selectFilter(this)" class="filter-tag" data-value="華廈">華廈</span>
@@ -373,11 +280,11 @@
                             <span onclick="selectFilter(this)" class="filter-tag" data-value="土地">土地</span>
                         </div>
                     </div>
-                    <div class="space-y-6">
-                        <label class="text-[11px] font-bold text-stone-900 uppercase tracking-[0.3em] flex items-center gap-3">
-                            <i data-lucide="car" class="w-4 h-4"></i> 車位需求 Parking
+                    <div class="space-y-4">
+                        <label class="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <i data-lucide="package" class="w-3 h-3"></i> 02. 車位需求
                         </label>
-                        <div id="filter-parking" class="flex gap-3">
+                        <div id="filter-parking" class="flex gap-2">
                             <span onclick="selectFilter(this)" class="filter-tag active" data-value="不限">不限</span>
                             <span onclick="selectFilter(this)" class="filter-tag" data-value="平面車位">平面車位</span>
                             <span onclick="selectFilter(this)" class="filter-tag" data-value="機械車位">機械車位</span>
@@ -385,330 +292,281 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10">
-                    <div class="group/input">
-                        <label class="text-[10px] font-bold text-stone-400 mb-2 block uppercase tracking-widest group-focus-within/input:text-gold transition-colors">最高預算(萬)</label>
-                        <input type="number" id="f-price" class="art-input" placeholder="不限限制">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+                    <div class="group">
+                        <label class="text-[9px] font-bold text-stone-400 mb-1 block uppercase tracking-tighter">03. 最高預算(萬)</label>
+                        <input type="number" id="f-price" class="art-input" placeholder="不限">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-stone-400 mb-2 block uppercase tracking-widest">最低坪數</label>
+                        <label class="text-[9px] font-bold text-stone-400 mb-1 block uppercase tracking-tighter">04. 最低坪數</label>
                         <input type="number" id="f-size" class="art-input" placeholder="不限">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-stone-400 mb-2 block uppercase tracking-widest">最高屋齡</label>
+                        <label class="text-[9px] font-bold text-stone-400 mb-1 block uppercase tracking-tighter">05. 最高屋齡</label>
                         <input type="number" id="f-age" class="art-input" placeholder="不限">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-stone-400 mb-2 block uppercase tracking-widest">最少房數</label>
+                        <label class="text-[9px] font-bold text-stone-400 mb-1 block uppercase tracking-tighter">06. 最少房數</label>
                         <input type="number" id="f-room" class="art-input" placeholder="不限">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-stone-400 mb-2 block uppercase tracking-widest">客廳數量</label>
+                        <label class="text-[9px] font-bold text-stone-400 mb-1 block uppercase tracking-tighter">07. 客廳數量</label>
                         <input type="number" id="f-hall" class="art-input" placeholder="不限">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-stone-400 mb-2 block uppercase tracking-widest">衛浴數量</label>
+                        <label class="text-[9px] font-bold text-stone-400 mb-1 block uppercase tracking-tighter">08. 衛浴數量</label>
                         <input type="number" id="f-bath" class="art-input" placeholder="不限">
                     </div>
                 </div>
 
-                <div class="flex flex-col md:flex-row justify-between items-center mt-16 pt-10 border-t border-stone-50 gap-8">
-                    <div class="flex items-center gap-4">
-                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <p class="text-[10px] text-stone-400 font-medium tracking-widest italic uppercase">Live Connection to Notion Cloud</p>
-                    </div>
-                    <div class="flex gap-4 w-full md:w-auto">
-                        <button onclick="resetFilters()" class="flex-1 md:px-10 py-5 border border-stone-200 text-[11px] font-bold uppercase tracking-widest hover:bg-stone-50 transition-all">重置條件</button>
-                        <button onclick="applyFilters()" class="flex-[2] md:px-16 py-5 bg-stone-900 text-white text-[11px] font-bold tracking-[0.4em] uppercase hover:bg-gold transition-all flex items-center justify-center gap-4 shadow-lg">
-                            <i data-lucide="search" class="w-4 h-4"></i> 開始深度檢索
-                        </button>
-                    </div>
+                <div class="flex justify-between items-center mt-12 pt-8 border-t border-stone-50">
+                    <p class="text-[10px] text-stone-300 italic">* 所有資料皆即時連線至後端雲端數據庫</p>
+                    <button onclick="applyFilters()" class="bg-stone-900 text-white px-12 py-4 text-[11px] font-bold tracking-[0.3em] uppercase hover:bg-stone-700 transition-all flex items-center gap-3">
+                        <i data-lucide="search" class="w-4 h-4"></i> 開始檢索物件
+                    </button>
                 </div>
             </div>
-            
-            <div id="estate-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-24">
-                </div>
+
+            <div id="estate-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-20"></div>
         </section>
 
-        <section id="page-booking" class="page-view max-w-6xl mx-auto px-8 pb-32">
-            <div class="text-center mb-20 space-y-6">
-                <h2 class="text-5xl font-bold serif text-stone-900">預約您的靈感空間</h2>
-                <div class="w-16 h-[2px] bg-gold mx-auto"></div>
-                <p class="text-stone-400 text-sm tracking-widest uppercase font-light">Secure Your Professional Workspace Today</p>
+        <section id="page-booking" class="page-view max-w-5xl mx-auto px-8 pb-32">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold serif mb-4">預約您的靈感空間</h2>
+                <div class="w-12 h-1 bg-[#b4a082] mx-auto"></div>
             </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 bg-white border border-stone-100 shadow-2xl overflow-hidden rounded-sm">
-                <div class="lg:col-span-7 p-12 lg:p-20 space-y-12">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div class="group">
-                            <label class="text-[11px] font-bold text-stone-400 uppercase tracking-widest group-focus-within:text-gold transition-colors">姓名 Full Name</label>
-                            <input type="text" id="booking-name" class="art-input" placeholder="請輸入聯絡人姓名">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-0 bg-white border border-stone-100 shadow-2xl overflow-hidden">
+                <div class="lg:col-span-3 p-10 md:p-16 space-y-10">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">姓名 / Name</label>
+                            <input type="text" id="booking-name" placeholder="請輸入姓名" class="art-input">
                         </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-stone-400 uppercase tracking-widest">電話 Mobile</label>
-                            <input type="tel" id="booking-tel" class="art-input" placeholder="09XX-XXX-XXX">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div>
-                            <label class="text-[11px] font-bold text-stone-400 uppercase tracking-widest">預約日期 Date</label>
-                            <input type="date" id="booking-date" class="art-input">
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-stone-400 uppercase tracking-widest">選擇方案 Plan</label>
-                            <select id="booking-plan" class="art-input appearance-none cursor-pointer">
-                                <option value="300" data-name="方案 A. 包日">方案 A. 包日 (300元) - 09:00~21:00</option>
-                                <option value="200" data-name="方案 B. 白天">方案 B. 白天 (200元) - 09:00~17:00</option>
-                                <option value="99" data-name="方案 C. 夜間">方案 C. 夜間 (99元) - 17:00~21:00</option>
-                            </select>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">電話 / Phone</label>
+                            <input type="tel" id="booking-tel" placeholder="09XX-XXX-XXX" class="art-input">
                         </div>
                     </div>
-                    <div class="pt-8">
-                        <button id="booking-btn" onclick="submitBooking()" class="w-full bg-stone-900 text-white py-8 text-[12px] font-bold tracking-[0.6em] uppercase hover:bg-gold hover:translate-y-[-4px] transition-all shadow-xl flex items-center justify-center gap-4 group">
-                            確認並獲取匯款資訊 <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-2 transition-transform"></i>
-                        </button>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">預約日期 / Date</label>
+                        <input type="date" id="booking-date" class="art-input">
                     </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">選擇方案 / Selection</label>
+                        <select id="booking-plan" class="art-input cursor-pointer">
+                            <option value="300" data-name="方案 A. 包日">方案 A. 包日 (300元) - 09:00~21:00</option>
+                            <option value="200" data-name="方案 B. 白天">方案 B. 白天 (200元) - 09:00~17:00</option>
+                            <option value="99" data-name="方案 C. 夜間">方案 C. 夜間 (99元) - 17:00~21:00</option>
+                            <option value="150" data-name="方案 D. 夜間延長">方案 D. 夜間延長 (150元) - 17:00~00:00</option>
+                        </select>
+                    </div>
+                    <button id="booking-btn" onclick="submitBooking()" class="w-full bg-stone-900 text-white py-6 text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-black transition-all shadow-lg hover:shadow-2xl active:scale-[0.98]">
+                        確認提交預約申請
+                    </button>
                 </div>
-
-                <div class="lg:col-span-5 bg-stone-50 p-12 lg:p-20 flex flex-col justify-between border-l border-stone-100">
-                    <div class="space-y-12">
-                        <h4 class="serif font-bold text-2xl tracking-widest text-stone-900 border-b border-stone-200 pb-6 uppercase">Reservation Policy</h4>
-                        <div class="space-y-8">
-                            <div class="flex gap-6">
-                                <span class="text-gold font-serif text-2xl italic">01.</span>
-                                <p class="text-xs text-stone-500 leading-relaxed font-medium">預約提交後，請於一小時內完成匯款以鎖定時段，逾期系統將自動釋出空間。</p>
+                
+                <div class="lg:col-span-2 bg-stone-50 p-10 md:p-16 flex flex-col justify-between border-l border-stone-100">
+                    <div class="space-y-8">
+                        <h4 class="serif font-bold text-xl tracking-widest border-b border-stone-200 pb-4">Reservation Policy</h4>
+                        <div class="space-y-6 text-[12px] text-stone-500 leading-loose">
+                            <div class="flex gap-4">
+                                <span class="text-stone-900 font-bold">01.</span>
+                                <p>預約完成後，系統將提供專屬匯款帳號，請於一小時內完成支付以保留時段。</p>
                             </div>
-                            <div class="flex gap-6">
-                                <span class="text-gold font-serif text-2xl italic">02.</span>
-                                <p class="text-xs text-stone-500 leading-relaxed font-medium">匯款後請加入 LINE 官方帳號並提供帳號末五碼。確認入帳後，我們將發送空間門禁密碼。</p>
+                            <div class="flex gap-4">
+                                <span class="text-stone-900 font-bold">02.</span>
+                                <p>匯款後請透過官方 LINE 上傳憑證，管理員核對後會發放當日的空間門禁密碼。</p>
                             </div>
-                            <div class="flex gap-6">
-                                <span class="text-gold font-serif text-2xl italic">03.</span>
-                                <p class="text-xs text-stone-500 leading-relaxed font-medium">共享空間內請保持安靜。若需通訊會議，請移至通訊專用區以維護他人使用品質。</p>
+                            <div class="flex gap-4 text-red-500 font-medium">
+                                <span class="font-bold">03.</span>
+                                <p>近期活動：包日方案於 Google Map 留下五星好評，即可現場折抵 50 元！</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="bg-white p-8 border border-gold/20 mt-12 shadow-sm rounded-sm">
-                        <p class="text-red-500 font-bold text-[10px] tracking-widest mb-4 uppercase flex items-center gap-2">
-                            <i data-lucide="sparkles" class="w-3 h-3"></i> Exclusive Offer
-                        </p>
-                        <p class="text-sm text-stone-900 font-bold">預約包日方案並於 Google 地圖評論，現場可領取 50 元現金回饋！</p>
+                    <div class="pt-12">
+                        <img src="https://images.unsplash.com/photo-1527192491265-7e15c55b1ed2?auto=format&fit=crop&q=80" class="w-full grayscale opacity-50 rounded-sm">
                     </div>
                 </div>
             </div>
         </section>
 
         <section id="page-login" class="page-view max-w-md mx-auto px-8 pt-32">
-            <div class="bg-white p-16 border border-stone-100 shadow-2xl text-center space-y-16 rounded-sm">
-                <div class="space-y-4">
-                    <h3 class="serif text-4xl font-bold tracking-widest text-stone-900">系統管理登入</h3>
-                    <p class="text-[10px] text-stone-400 font-bold tracking-[0.3em] uppercase">Administrator Verification</p>
+            <div class="bg-white p-12 border border-stone-100 shadow-2xl space-y-12 text-center relative">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-stone-200 via-stone-900 to-stone-200"></div>
+                <div class="space-y-2">
+                    <h3 class="serif text-3xl font-bold tracking-[0.2em] text-stone-900 uppercase">Management</h3>
+                    <p class="text-[9px] text-stone-400 tracking-widest uppercase font-bold">Authorized Personnel Only</p>
                 </div>
-                <div class="space-y-10">
+                <div class="space-y-8">
                     <div class="relative">
-                        <i data-lucide="user" class="absolute left-0 bottom-4 w-4 h-4 text-stone-300"></i>
-                        <input type="text" id="adm-u" placeholder="Admin Account" class="art-input pl-8 text-center">
+                        <input type="text" id="adm-u" placeholder="Account" class="art-input text-center">
                     </div>
                     <div class="relative">
-                        <i data-lucide="lock" class="absolute left-0 bottom-4 w-4 h-4 text-stone-300"></i>
-                        <input type="password" id="adm-p" placeholder="Security Password" class="art-input pl-8 text-center">
+                        <input type="password" id="adm-p" placeholder="Password" class="art-input text-center">
                     </div>
                 </div>
-                <button onclick="handleLogin()" class="w-full bg-stone-900 text-white py-6 text-[12px] font-bold uppercase tracking-[0.8em] hover:bg-gold transition-all shadow-lg">進入管理平台</button>
+                <button onclick="handleLogin()" class="w-full bg-stone-900 text-white py-5 text-[11px] font-bold uppercase tracking-[0.5em] hover:bg-black transition-all">Verify & Enter</button>
             </div>
         </section>
 
         <section id="page-admin" class="page-view max-w-7xl mx-auto px-8 pb-32">
-            <div class="flex flex-col lg:flex-row gap-16">
-                <div class="lg:w-80 bg-white border border-stone-100 shadow-xl rounded-sm overflow-hidden h-fit sticky top-32">
-                    <div class="p-10 bg-stone-900 text-white">
-                        <p class="serif font-bold text-xl tracking-widest mb-2">鄭梓言</p>
-                        <p class="text-[9px] text-stone-400 font-bold tracking-widest uppercase opacity-70">Chief Executive Office</p>
+            <div class="flex flex-col lg:flex-row gap-12">
+                <div class="lg:w-72 bg-white border border-stone-100 h-fit shadow-sm rounded-sm overflow-hidden">
+                    <div class="p-8 border-b border-stone-50 bg-stone-50">
+                        <p class="text-[9px] font-bold text-stone-400 uppercase tracking-widest mb-1">Signed in as</p>
+                        <p class="serif font-bold text-lg">Founder 鄭梓言</p>
                     </div>
-                    <nav class="flex flex-col py-6">
-                        <div onclick="switchAdminTab('estate', this)" class="admin-tab active">
-                            <i data-lucide="layout-grid" class="w-5 h-5"></i> 房產物件上架
+                    <nav class="flex flex-col">
+                        <div onclick="switchAdminTab('estate', this)" class="admin-tab active flex items-center gap-3">
+                            <i data-lucide="layers" class="w-4 h-4"></i> 物件管理中心
                         </div>
-                        <div onclick="switchAdminTab('stat', this)" class="admin-tab">
-                            <i data-lucide="trending-up" class="w-5 h-5"></i> 空間預約報表
+                        <div onclick="switchAdminTab('stat', this)" class="admin-tab flex items-center gap-3">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4"></i> 預約數據統計
                         </div>
-                        <div onclick="switchAdminTab('office-img', this)" class="admin-tab">
-                            <i data-lucide="aperture" class="w-5 h-5"></i> 環境視圖更新
+                        <div onclick="switchAdminTab('office-img', this)" class="admin-tab flex items-center gap-3">
+                            <i data-lucide="camera" class="w-4 h-4"></i> 環境影像維護
                         </div>
-                        <div class="h-[1px] bg-stone-50 mx-8 my-4"></div>
-                        <button onclick="location.reload()" class="p-8 text-left text-xs text-red-400 font-bold hover:bg-red-50 flex items-center gap-4 transition-colors">
-                            <i data-lucide="log-out" class="w-5 h-5"></i> 安全登出系統
+                        <div onclick="switchAdminTab('security', this)" class="admin-tab flex items-center gap-3 text-stone-400">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i> 安全設定
+                        </div>
+                        <button onclick="location.reload()" class="p-6 text-left text-xs text-red-400 font-bold hover:bg-red-50 transition-colors flex items-center gap-3 border-t">
+                            <i data-lucide="log-out" class="w-4 h-4"></i> 安全登出系統
                         </button>
                     </nav>
                 </div>
 
-                <div class="flex-1 bg-white border border-stone-100 p-12 lg:p-20 shadow-xl min-h-[800px] rounded-sm relative">
-                    
-                    <div id="adm-estate" class="admin-content space-y-16">
-                        <div class="flex justify-between items-center border-b border-stone-100 pb-10">
+                <div class="flex-1 bg-white border border-stone-100 p-10 md:p-16 shadow-sm min-h-[700px] relative">
+                    <div id="adm-estate" class="admin-content space-y-12">
+                        <div class="flex justify-between items-end border-b pb-8">
+                            <h3 class="serif text-2xl font-bold">新物件上架發佈</h3>
+                            <span class="text-[10px] text-stone-300 tracking-widest">REAL ESTATE SYNC</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                            <div class="col-span-full">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block tracking-widest">物件標題名稱</label>
+                                <input type="text" id="prop-name" placeholder="例如：西區台灣大道美宅" class="art-input font-bold text-lg">
+                            </div>
                             <div class="space-y-2">
-                                <h3 class="serif text-3xl font-bold text-stone-900 tracking-widest">物件上架控制台</h3>
-                                <p class="text-[10px] text-stone-400 font-bold tracking-widest uppercase">Property Listing Synchronizer</p>
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">銷售總價 (萬)</label>
+                                <input type="number" id="prop-price" class="art-input">
                             </div>
-                            <div class="bg-gold/10 px-6 py-2 rounded-full flex items-center gap-3">
-                                <div class="w-2 h-2 rounded-full bg-gold animate-ping"></div>
-                                <span class="text-[10px] font-bold text-gold uppercase tracking-widest">Notion Cloud Active</span>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">權狀坪數</label>
+                                <input type="number" id="prop-size" class="art-input">
                             </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
-                            <div class="col-span-full group">
-                                <label class="text-[11px] font-bold text-stone-900 uppercase tracking-widest mb-2 block group-focus-within:text-gold transition-all">物件名稱 Title</label>
-                                <input type="text" id="prop-name" class="art-input font-bold text-xl text-stone-900" placeholder="例如：西區高樓層景觀美宅">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">屋齡 (年)</label>
+                                <input type="number" id="prop-age" class="art-input">
                             </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2 block">銷售總價 (萬)</label>
-                                <input type="number" id="prop-price" class="art-input" placeholder="請輸入純數字">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2 block">建物坪數 (坪)</label>
-                                <input type="number" id="prop-size" class="art-input" placeholder="包含附屬建物">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2 block">完工屋齡 (年)</label>
-                                <input type="number" id="prop-age" class="art-input" placeholder="0 為新成屋">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2 block">物件類型 Category</label>
-                                <select id="prop-type-val" class="art-input cursor-pointer">
-                                    <option value="大樓">大樓</option><option value="華廈">華廈</option><option value="透天">透天</option><option value="土地">土地</option>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">建築類型</label>
+                                <select id="prop-type-val" class="art-input">
+                                    <option value="大樓">電梯大樓</option>
+                                    <option value="華廈">精緻華廈</option>
+                                    <option value="透天">傳統透天 / 別墅</option>
+                                    <option value="土地">土地開發</option>
                                 </select>
                             </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2 block">車位規格 Parking</label>
-                                <select id="prop-parking" class="art-input cursor-pointer">
-                                    <option value="平面車位">平面車位</option><option value="機械車位">機械車位</option><option value="無車位">無車位</option>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">車位配置</label>
+                                <select id="prop-parking" class="art-input">
+                                    <option value="平面車位">平面大車位</option>
+                                    <option value="機械車位">機械升降車位</option>
+                                    <option value="無車位">無提供車位</option>
                                 </select>
                             </div>
-                            
-                            <div class="col-span-full grid grid-cols-3 gap-10 bg-stone-50 p-10 border border-stone-100 rounded-sm">
-                                <div class="text-center space-y-4">
-                                    <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">房數 Room</label>
-                                    <input type="number" id="prop-room" class="art-input text-center text-2xl font-serif text-stone-900" value="3">
+                            <div class="col-span-full grid grid-cols-3 gap-8 p-6 bg-stone-50 rounded-sm">
+                                <div class="text-center">
+                                    <label class="text-[9px] font-bold text-stone-400 uppercase mb-2 block">房數</label>
+                                    <input type="number" id="prop-room" class="art-input text-center" value="2">
                                 </div>
-                                <div class="text-center space-y-4">
-                                    <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">廳數 Hall</label>
-                                    <input type="number" id="prop-hall" class="art-input text-center text-2xl font-serif text-stone-900" value="2">
+                                <div class="text-center">
+                                    <label class="text-[9px] font-bold text-stone-400 uppercase mb-2 block">廳數</label>
+                                    <input type="number" id="prop-hall" class="art-input text-center" value="1">
                                 </div>
-                                <div class="text-center space-y-4">
-                                    <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">衛浴 Bath</label>
-                                    <input type="number" id="prop-bath" class="art-input text-center text-2xl font-serif text-stone-900" value="2">
-                                </div>
-                            </div>
-
-                            <div class="col-span-full space-y-8">
-                                <div class="flex justify-between items-center">
-                                    <label class="text-[11px] font-bold text-stone-900 uppercase tracking-widest block">視覺影像管理 Media Gallery</label>
-                                    <span class="text-[9px] text-stone-300 font-bold uppercase">Max 8 Images</span>
-                                </div>
-                                
-                                <div id="prop-upload-preview" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-10">
-                                    <div onclick="document.getElementById('prop-file-input').click()" class="preview-box border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-300 cursor-pointer hover:bg-stone-50 hover:border-gold transition-all group">
-                                        <i data-lucide="cloud-upload" class="w-10 h-10 group-hover:scale-110 group-hover:text-gold transition-all"></i>
-                                        <span class="text-[10px] font-bold mt-3 uppercase tracking-widest">Select File</span>
-                                    </div>
-                                </div>
-                                <input type="file" id="prop-file-input" class="hidden" multiple accept="image/*" onchange="handleImgPreview(this.files, 'prop-upload-preview')">
-                                
-                                <div class="bg-stone-900 p-8 rounded-sm">
-                                    <label class="text-[10px] font-bold text-gold uppercase tracking-[0.3em] mb-4 block">或使用外部連結 (Notion 封面 URL 優先)</label>
-                                    <input type="text" id="prop-img-url" placeholder="https://images.unsplash.com/..." class="art-input text-white border-stone-700 placeholder:text-stone-600 focus:border-gold">
+                                <div class="text-center">
+                                    <label class="text-[9px] font-bold text-stone-400 uppercase mb-2 block">衛浴</label>
+                                    <input type="number" id="prop-bath" class="art-input text-center" value="1">
                                 </div>
                             </div>
+                            <div class="col-span-full">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">封面圖連結 (支援雲端網址)</label>
+                                <input type="text" id="prop-img-url" placeholder="https://images.unsplash.com/..." class="art-input">
+                            </div>
                         </div>
-                        <div class="pt-10">
-                            <button onclick="submitProperty(event)" id="submit-prop-btn" class="w-full bg-stone-900 text-white py-8 font-bold text-[12px] uppercase tracking-[0.8em] hover:bg-stone-800 transition-all shadow-2xl flex items-center justify-center gap-6 group">
-                                <i data-lucide="upload-cloud" class="w-5 h-5 group-hover:animate-bounce"></i> 立即發佈並與 Notion 同步
-                            </button>
-                        </div>
+                        <button onclick="submitProperty(event)" id="submit-prop-btn" class="w-full bg-[#b4a082] text-white py-6 font-bold text-[11px] uppercase tracking-[0.5em] hover:bg-stone-900 transition-all shadow-xl">
+                            上傳資料並同步至 Notion 雲端
+                        </button>
                     </div>
 
                     <div id="adm-stat" class="admin-content hidden space-y-12">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-stone-100 pb-10 gap-8">
-                            <div class="space-y-2">
-                                <h3 class="serif text-3xl font-bold text-stone-800 tracking-wider italic">共享辦公室預約監控</h3>
-                                <p class="text-[10px] text-stone-400 font-bold tracking-widest uppercase">Revenue & Booking Analytics</p>
+                        <div class="flex justify-between items-end border-b pb-8">
+                            <h3 class="serif text-2xl font-bold">預約核對與看板</h3>
+                            <button onclick="loadBookings()" class="text-[10px] font-bold text-stone-400 flex items-center gap-2 hover:text-stone-900 transition-colors">
+                                <i data-lucide="refresh-cw" class="w-3 h-3"></i> 刷新數據
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-stone-50 p-8 border border-stone-100">
+                                <p class="text-[10px] text-stone-400 font-bold mb-2 uppercase tracking-widest">當月預估營收</p>
+                                <p id="stat-revenue" class="text-3xl serif font-bold text-stone-900">NT$ 0</p>
                             </div>
-                            <div class="flex gap-4">
-                                <button onclick="loadBookings()" class="p-4 border border-stone-100 rounded hover:bg-stone-50 transition-all flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest">
-                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> 重新載入
-                                </button>
-                                <button class="p-4 bg-stone-900 text-white rounded hover:bg-gold transition-all flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest">
-                                    <i data-lucide="download" class="w-4 h-4"></i> 匯出報表
-                                </button>
+                            <div class="bg-stone-50 p-8 border border-stone-100">
+                                <p class="text-[10px] text-stone-400 font-bold mb-2 uppercase tracking-widest">總成交件數</p>
+                                <p id="stat-count" class="text-3xl serif font-bold text-stone-900">0</p>
+                            </div>
+                            <div class="bg-stone-900 p-8 text-white">
+                                <p class="text-[10px] text-stone-400 font-bold mb-2 uppercase tracking-widest">系統健康度</p>
+                                <p class="text-xl font-bold tracking-widest">Cloud Online</p>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                            <div class="bg-stone-950 p-12 shadow-xl border-l-8 border-gold group">
-                                <p class="text-[10px] text-gold/60 font-bold mb-4 uppercase tracking-[0.3em]">本月累計營收預估</p>
-                                <div class="flex items-baseline gap-2">
-                                    <span class="text-gold text-sm font-serif italic">NT$</span>
-                                    <p id="stat-revenue" class="text-5xl serif font-bold text-white tracking-tighter">0</p>
-                                </div>
-                                <div class="mt-6 h-1 w-full bg-stone-800 rounded-full overflow-hidden">
-                                    <div class="h-full bg-gold w-2/3 group-hover:w-full transition-all duration-1000"></div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-12 border border-stone-100 shadow-xl border-l-8 border-stone-900">
-                                <p class="text-[10px] text-stone-400 font-bold mb-4 uppercase tracking-[0.3em]">有效預約筆數</p>
-                                <div class="flex items-baseline gap-4">
-                                    <p id="stat-count" class="text-6xl serif font-bold text-stone-900">0</p>
-                                    <span class="text-stone-300 text-xs font-bold uppercase tracking-widest">Orders</span>
-                                </div>
-                            </div>
-                            <div class="bg-stone-50 p-12 border border-stone-100 shadow-xl border-l-8 border-stone-200">
-                                <p class="text-[10px] text-stone-400 font-bold mb-4 uppercase tracking-[0.3em]">平均客單價</p>
-                                <div class="flex items-baseline gap-2">
-                                    <span class="text-stone-300 text-sm italic">avg.</span>
-                                    <p id="stat-avg" class="text-5xl serif font-bold text-stone-800">0</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="table-container bg-white border border-stone-100 rounded shadow-2xl overflow-hidden">
-                            <table class="w-full text-left">
-                                <thead class="bg-stone-50 font-bold border-b border-stone-100 text-stone-400 uppercase tracking-[0.2em] text-[10px]">
+                        <div class="mt-8 border border-stone-100 overflow-hidden">
+                            <table class="w-full text-[12px] text-left">
+                                <thead class="bg-stone-50 text-stone-400 uppercase font-bold tracking-widest border-b border-stone-100">
                                     <tr>
-                                        <th class="p-8">預約日期 Date</th>
-                                        <th class="p-8">客戶姓名 Name</th>
-                                        <th class="p-8 text-center">選擇方案 Plan</th>
-                                        <th class="p-8 text-right">單筆金額 Amount</th>
+                                        <th class="p-5">預約日期</th>
+                                        <th class="p-5">客戶資訊</th>
+                                        <th class="p-5">預約方案</th>
+                                        <th class="p-5">結算金額</th>
                                     </tr>
                                 </thead>
-                                <tbody id="stat-table-body" class="divide-y divide-stone-50 text-[13px] text-stone-600">
-                                    <tr><td colspan="4" class="p-32 text-center italic text-stone-300">正在與 Notion 同步實時數據...</td></tr>
+                                <tbody id="stat-table-body">
+                                    <tr><td colspan="4" class="p-16 text-center text-stone-300 italic">正在載入雲端數據...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    <div id="adm-office-img" class="admin-content hidden space-y-12">
-                        <div class="space-y-4">
-                            <h3 class="serif text-3xl font-bold border-b border-stone-50 pb-8 text-stone-900">環境視圖維護</h3>
-                            <p class="text-xs text-stone-400 leading-relaxed font-light">
-                                此處上傳的圖片將即時更新至首頁的「共享辦公空間」介紹區與英雄背景圖。<br>
-                                建議解析度：2560 x 1440 (16:9)，單張大小不超過 2MB 以確保載入速度。
-                            </p>
-                        </div>
-                        
-                        <div id="office-preview" class="grid grid-cols-2 lg:grid-cols-4 gap-8">
-                            <div onclick="document.getElementById('fileIn2').click()" class="preview-box border-2 border-dashed border-gold/40 flex flex-col items-center justify-center text-gold cursor-pointer hover:bg-stone-50 transition-all">
-                                <i data-lucide="image-plus" class="w-10 h-10"></i>
-                                <span class="text-[9px] font-bold mt-4 uppercase tracking-widest">Add Media</span>
+                    <div id="adm-office-img" class="admin-content hidden space-y-10">
+                        <h3 class="serif text-2xl font-bold border-b pb-8">辦公環境影像管理</h3>
+                        <div id="office-preview" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div onclick="document.getElementById('fileIn2').click()" class="preview-box border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-300 cursor-pointer hover:bg-stone-50 transition-all">
+                                <i data-lucide="image-plus" class="w-8 h-8 mb-2"></i>
+                                <span class="text-[9px] font-bold tracking-widest uppercase">Add Media</span>
                             </div>
                         </div>
                         <input type="file" id="fileIn2" class="hidden" multiple accept="image/*" onchange="handleImgPreview(this.files, 'office-preview')">
-                        
-                        <div class="pt-10 flex gap-6">
-                            <button onclick="saveOfficeChanges()" class="flex-1 bg-stone-900 text-white py-6 font-bold text-[11px] tracking-[0.5em] uppercase hover:bg-black transition-all shadow-xl">正式發佈變更</button>
-                            <button onclick="location.reload()" class="px-12 py-6 border border-stone-200 text-[11px] font-bold uppercase tracking-widest">取消變更</button>
+                        <div class="bg-stone-50 p-6 text-[11px] text-stone-400 border-l-2 border-stone-200">
+                            提示：上傳的第一張圖片將會自動同步為「首頁」的 Hero 背景。
+                        </div>
+                        <button onclick="saveOfficeChanges()" class="w-full bg-stone-900 text-white py-5 font-bold text-[11px] uppercase tracking-[0.4em] hover:bg-black transition-all">儲存目前所有變更</button>
+                    </div>
+
+                    <div id="adm-security" class="admin-content hidden space-y-10">
+                        <h3 class="serif text-2xl font-bold border-b pb-8">Founder 憑證管理</h3>
+                        <div class="max-w-md space-y-8">
+                            <div class="space-y-4">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">系統管理者帳號</label>
+                                <input type="text" id="new-u" placeholder="New Account" class="art-input">
+                            </div>
+                            <div class="space-y-4">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">系統管理者密碼</label>
+                                <input type="password" id="new-p" placeholder="New Password" class="art-input">
+                            </div>
+                            <button onclick="alert('安全憑證已更新')" class="bg-stone-900 text-white px-10 py-4 text-[11px] font-bold uppercase tracking-widest hover:bg-stone-700 transition-all">更新帳號資訊</button>
                         </div>
                     </div>
                 </div>
@@ -716,385 +574,309 @@
         </section>
     </main>
 
-    <footer class="py-40 px-12 border-t bg-white mt-60 overflow-hidden relative">
-        <div class="absolute top-20 right-0 text-[15vw] font-serif font-bold text-stone-50 pointer-events-none -z-10">ESTATE</div>
-        
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-24 relative z-10">
-            <div class="md:col-span-2 space-y-12">
-                <div class="flex items-center gap-4">
-                    <div class="h-10 w-10 bg-stone-900 rounded-full flex items-center justify-center">
-                        <span class="text-white text-[10px] font-bold italic">H</span>
-                    </div>
-                    <h5 class="serif text-3xl font-bold tracking-widest text-stone-900 uppercase">涵軒雅敘</h5>
+    <footer class="py-32 px-12 border-t border-stone-100 bg-white mt-48 overflow-hidden relative">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-20 relative z-10">
+            <div class="md:col-span-2 space-y-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 border border-stone-900 rounded-full flex items-center justify-center text-xs font-bold italic">H</div>
+                    <h5 class="serif text-2xl font-bold tracking-widest">涵軒雅敘 <span class="text-[10px] font-sans font-light text-stone-400">HOUSE TALK</span></h5>
                 </div>
-                <p class="text-sm text-stone-400 leading-loose max-w-sm font-light">
-                    專注於提供高品質房產服務與極致安靜的個人辦公體驗。<br>
-                    在台中台灣大道，為您在喧囂中保留一片靈魂的棲所。
+                <p class="text-xs text-stone-400 leading-loose max-w-sm tracking-widest">
+                    專注於提供高品質的房地產服務與辦公體驗。<br>
+                    透過數位科技與美學空間的結合，重新定義居住與工作的意義。
                 </p>
-                <div class="flex gap-10 text-[10px] font-bold tracking-[0.4em] uppercase text-stone-900">
-                    <a href="#" class="hover:text-gold transition-colors">Instagram</a>
-                    <a href="#" class="hover:text-gold transition-colors">Line Official</a>
-                    <a href="#" class="hover:text-gold transition-colors">Facebook</a>
+                <div class="flex gap-6 text-stone-300">
+                    <a href="https://www.instagram.com/hanshousetalk/" target="_blank" class="hover:text-pink-500 transition-colors"><i data-lucide="instagram"></i></a>
+                    <a href="https://www.facebook.com/share/1CZjPseezJ/?mibextid=wwXIfr" target="_blank" class="hover:text-blue-600 transition-colors"><i data-lucide="facebook"></i></a>
+                </div>
+            </div>
+            
+            <div class="space-y-8">
+                <h6 class="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-900">聯絡資訊 Contact</h6>
+                <div class="space-y-4 text-xs tracking-widest text-stone-500 leading-relaxed">
+                    <p>04 2326 6168</p>
+                    <p>0979-025-379</p>
+                    <p class="lowercase">hanshousetalk@gmail.com</p>
                 </div>
             </div>
 
-            <div class="space-y-10">
-                <h6 class="text-[11px] font-bold uppercase tracking-[0.4em] text-stone-900 border-b border-stone-100 pb-4">Contact Info</h6>
-                <div class="space-y-6 text-xs tracking-widest text-stone-500 font-medium leading-relaxed">
-                    <p class="flex items-center gap-4 hover:text-stone-900 transition-all cursor-pointer"><i data-lucide="smartphone" class="w-4 h-4"></i> 0979-025-379</p>
-                    <p class="flex items-center gap-4 hover:text-stone-900 transition-all cursor-pointer"><i data-lucide="mail" class="w-4 h-4"></i> hanshousetalk@gmail.com</p>
-                    <p class="flex items-center gap-4 leading-loose"><i data-lucide="map-pin" class="w-4 h-4"></i> 臺中市西區台灣大道二段<br>375號9樓之2</p>
-                </div>
-            </div>
-
-            <div class="space-y-10">
-                <h6 class="text-[11px] font-bold uppercase tracking-[0.4em] text-stone-900 border-b border-stone-100 pb-4">Operational Hours</h6>
-                <div class="space-y-6 text-xs tracking-widest text-stone-500 font-medium leading-relaxed">
-                    <p class="flex justify-between"><span>Mon — Fri</span> <span class="text-stone-900">09:00 - 21:00</span></p>
-                    <p class="flex justify-between"><span>Saturday</span> <span class="text-stone-900">10:00 - 18:00</span></p>
-                    <p class="flex justify-between border-t border-stone-50 pt-4"><span>Admin Access</span> <span onclick="navigateTo('login')" class="text-gold cursor-pointer hover:underline underline-offset-4 italic">Login Only</span></p>
-                </div>
+            <div class="space-y-8">
+                <h6 class="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-900">服務據點 Location</h6>
+                <p class="text-xs tracking-widest text-stone-500 leading-relaxed">
+                    臺中市西區台灣大道二段375號<br>9樓之2
+                </p>
+                <p class="text-[9px] text-stone-300 tracking-[0.2em] font-medium mt-12">
+                    HAN'S HOUSETALK © All Rights <span onclick="navigateTo('login')" class="cursor-pointer hover:text-stone-900">Reserved.</span>
+                </p>
             </div>
         </div>
-        
-        <div class="max-w-7xl mx-auto mt-32 pt-10 border-t border-stone-50 flex flex-col md:flex-row justify-between items-center text-[9px] text-stone-300 font-bold tracking-[0.5em] uppercase">
-            <p>HAN'S HOUSETALK © 2026. ALL RIGHTS RESERVED.</p>
-            <p class="mt-4 md:mt-0">Crafted with Excellence for Real Estate & Shared Workspace.</p>
-        </div>
+        <div class="absolute bottom-0 right-0 serif text-[200px] text-stone-50 -mb-20 -mr-20 pointer-events-none select-none font-bold">HAN</div>
     </footer>
 
-    <div id="success-modal" class="fixed inset-0 bg-stone-950/60 z-[2000] hidden items-center justify-center p-6 backdrop-blur-xl">
-        <div class="bg-white max-w-xl w-full p-16 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border-t-[10px] border-stone-900 rounded-sm relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-8 text-stone-50 font-serif text-8xl pointer-events-none">OK</div>
-            
-            <div class="text-center space-y-8 relative">
-                <div class="w-24 h-24 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-10">
-                    <i data-lucide="check-circle-2" class="w-12 h-12"></i>
+    <div id="success-modal" class="fixed inset-0 bg-stone-900/40 z-[2000] hidden items-center justify-center p-6 backdrop-blur-md">
+        <div class="bg-white max-w-xl w-full p-12 shadow-2xl rounded-sm border-t-8 border-stone-900 relative">
+            <button onclick="location.reload()" class="absolute top-8 right-8 text-stone-300 hover:text-stone-900 transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="text-center mb-10">
+                <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="check" class="text-green-500 w-10 h-10"></i>
                 </div>
-                <h4 class="serif text-4xl font-bold text-stone-900 tracking-widest">預約單已初步建立</h4>
-                <p class="text-stone-400 text-xs tracking-widest font-light leading-loose">
-                    請於 <span class="text-stone-900 font-bold underline">60 分鐘內</span> 完成匯款以確保您的預約時段。<br>
-                    逾期系統將自動取消預約，不另行通知。
-                </p>
+                <h4 class="serif text-3xl font-bold mb-2">預約申請已提交</h4>
+                <p class="text-xs text-stone-400 tracking-widest uppercase">Reservation Successful</p>
+            </div>
+            
+            <div class="text-[13px] leading-relaxed space-y-8">
+                <div class="bg-stone-50 p-8 border border-stone-100 font-mono space-y-4">
+                    <p class="text-stone-400 text-[10px] font-bold uppercase tracking-widest">銀行匯款資訊 / Bank Info</p>
+                    <div class="text-lg font-bold text-stone-900">
+                        中國信託 (822)<br>
+                        帳號：<span id="bank-acc-display" class="gold-text">4735 4064 2102</span>
+                    </div>
+                    <button onclick="copyAcc()" class="text-[10px] font-bold text-blue-500 hover:underline uppercase tracking-widest flex items-center gap-1">
+                        <i data-lucide="copy" class="w-3 h-3"></i> 點擊複製帳號
+                    </button>
+                </div>
                 
-                <div class="bg-stone-50 p-10 border border-stone-100 font-mono space-y-6 text-left rounded-sm relative group">
-                    <p class="text-[9px] text-stone-400 font-bold tracking-widest uppercase border-b border-stone-200 pb-3">Payment Bank Details</p>
-                    <div class="space-y-3">
-                        <p class="text-xs text-stone-500 font-bold">銀行代碼：<span class="text-stone-900">822 (中國信託)</span></p>
-                        <p class="text-xs text-stone-500 font-bold">帳戶名稱：<span class="text-stone-900">鄭梓言</span></p>
-                        <div class="flex justify-between items-center bg-white p-4 border border-stone-100 group-hover:border-gold transition-colors">
-                            <p class="text-xl font-bold text-stone-900 tracking-tighter">4735 4064 2102</p>
-                            <button onclick="copyAccount()" class="text-gold text-[10px] font-bold uppercase tracking-widest hover:text-stone-900">Copy</button>
+                <div class="space-y-4">
+                    <p class="font-bold flex items-center gap-2">📍 下一步驟：</p>
+                    <ul class="list-disc list-inside text-stone-500 space-y-2 pl-4">
+                        <li>完成匯款後，請至官方 LINE 提供帳號末五碼。</li>
+                        <li>我們將於查帳後，發放當日專屬空間進出密碼。</li>
+                    </ul>
+                </div>
+
+                <div class="border-t border-stone-100 pt-8">
+                    <div class="flex items-center gap-3 bg-red-50 p-4 border border-red-100">
+                        <span class="text-xl">⭐</span>
+                        <div class="text-[11px] text-red-800 leading-relaxed font-medium">
+                            <span class="font-bold">期間限定優惠：</span>包日方案留下 Google 好評，<br>現折 50 元！(原價 300 ⮕ <span class="text-lg">250</span>)
                         </div>
                     </div>
                 </div>
-
-                <div class="pt-6 space-y-4">
-                    <button onclick="location.reload()" class="w-full bg-stone-900 text-white py-6 text-[11px] font-bold uppercase tracking-[0.5em] hover:bg-gold transition-all shadow-lg">我已記下匯款資訊，返回</button>
-                    <p class="text-[9px] text-stone-300 font-bold tracking-widest italic uppercase">* 匯款後請至 LINE 告知帳號末五碼</p>
-                </div>
             </div>
+            
+            <button onclick="location.reload()" class="mt-10 w-full bg-stone-900 text-white py-5 text-[11px] font-bold uppercase tracking-[0.4em] hover:bg-black transition-all">完成並返回首頁</button>
         </div>
     </div>
 
     <script>
-        /* * Han's HouseTalk Core Logic Engine v2.5
-         * Author: Gemini for Han
-         * Description: 全局導航、Notion API 連動、異步預約處理、房產數據動態渲染與高級篩選
-         */
-
-        // 1. 全域變數定義
         const workerUrl = 'https://hanxuan.hank30005.workers.dev';
-        let allEstates = []; // 原始數據緩存
-        let filteredEstates = []; // 篩選後數據
-        let isLoading = false;
+        let allEstates = []; 
 
-        // 初始化圖標
         lucide.createIcons();
 
-        /**
-         * 2. 全局導航與頁面切換核心
-         * @param {string} id - 頁面 ID
-         */
         function navigateTo(id) {
-            // 頁面重置
-            const allViews = document.querySelectorAll('.page-view');
-            allViews.forEach(p => {
-                p.classList.remove('active');
-                p.style.display = 'none';
-            });
-
-            // 啟動目標頁
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
             const target = document.getElementById('page-' + id);
             if(target) {
-                target.style.display = 'block';
-                // 延遲以啟動過渡動畫
-                setTimeout(() => target.classList.add('active'), 20);
-                
-                // 導航行為邏輯
+                target.classList.add('active');
                 toggleSideMenu(false);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                
-                // 特殊頁面載入觸發
-                if (id === 'realestate') loadRealEstate();
-                if (id === 'admin') /* 驗證後處理 */;
             }
+            if (id === 'realestate') loadRealEstate();
         }
 
-        /**
-         * 3. 側邊全屏選單交互
-         * @param {boolean} open - 開啟或關閉
-         */
         function toggleSideMenu(open) { 
             const menu = document.getElementById('side-menu');
-            if(open) {
-                menu.classList.remove('translate-x-full');
-                document.body.style.overflow = 'hidden'; // 禁止背景捲動
-            } else {
-                menu.classList.add('translate-x-full');
-                document.body.style.overflow = 'auto';
-            }
+            menu.style.transform = open ? 'translateX(0)' : 'translateX(100%)'; 
         }
 
-        /**
-         * 4. 安全登入驗證
-         */
         function handleLogin() {
-            const u = document.getElementById('adm-u').value.trim();
-            const p = document.getElementById('adm-p').value.trim();
-            
-            // 簡單前台驗證，核心建議在後端 API 校驗
+            const u = document.getElementById('adm-u').value;
+            const p = document.getElementById('adm-p').value;
             if (u === 'admin' && p === '1234') { 
-                showToast("驗證成功，歡迎創辦人", "success");
                 navigateTo('admin'); 
             } else { 
-                showToast("安全驗證失敗：帳號或密碼錯誤", "error");
+                alert('❌ 驗證失敗，請確認 Founder 憑證'); 
             }
         }
 
-        /**
-         * 5. Notion 房產數據載入與渲染 (核心)
-         */
         async function loadRealEstate() {
             const container = document.getElementById('estate-list-container');
-            const countLabel = document.getElementById('prop-count');
+            const countDisplay = document.getElementById('prop-count');
+            container.innerHTML = '<div class="col-span-full py-40 text-center text-stone-300 serif text-xl tracking-widest italic animate-pulse">正在同步雲端物件數據...</div>';
             
-            // 1. 骨架屏載入狀態
-            container.innerHTML = generateSkeleton(4);
-            countLabel.innerText = "正在連線雲端資料庫...";
-
             try {
-                const response = await fetch(workerUrl, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (!response.ok) throw new Error("Cloud Network Error");
-
+                const response = await fetch(workerUrl);
                 const data = await response.json();
                 allEstates = data.results || [];
-                
-                // 2. 數據清洗與初始渲染
                 renderEstates(allEstates);
-                countLabel.innerText = `目前共有 ${allEstates.length} 個精選物件`;
-                
-                // 重新刷新圖標
-                lucide.createIcons();
-                
+                countDisplay.innerText = `顯示 ${allEstates.length} 個物件`;
             } catch (err) {
-                console.error("Notion Fetch Error:", err);
-                container.innerHTML = `
-                    <div class="col-span-full py-20 text-center space-y-6">
-                        <i data-lucide="shield-alert" class="w-16 h-16 mx-auto text-stone-200"></i>
-                        <p class="text-stone-400 font-bold tracking-widest uppercase">無法與 Notion 資料庫建立安全連線</p>
-                        <button onclick="loadRealEstate()" class="px-8 py-3 bg-stone-900 text-white text-[10px] uppercase font-bold tracking-widest">重新嘗試載入</button>
-                    </div>`;
-                lucide.createIcons();
+                container.innerHTML = '<div class="col-span-full py-20 text-center text-red-300">連線至資料庫失敗，請檢查 API 設定。</div>';
             }
         }
 
-        /**
-         * 6. 房產卡片渲染引擎
-         * @param {Array} list - 物件清單
-         */
         function renderEstates(list) {
             const container = document.getElementById('estate-list-container');
+            container.innerHTML = list.length ? '' : '<div class="col-span-full py-20 text-center text-stone-300">目前沒有符合篩選條件的物件。</div>';
             
-            if (list.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full py-32 text-center animate-fade-in">
-                        <p class="text-stone-300 font-serif italic text-2xl tracking-widest uppercase">No Properties Matching Your Criteria</p>
-                    </div>`;
-                return;
-            }
-
-            container.innerHTML = list.map((item, index) => {
-                const props = item.properties;
+            list.forEach(item => {
+                const p = item.properties;
                 const cover = item.cover?.external?.url || item.cover?.file?.url || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80";
                 
-                // 屬性解析 (防止 Notion 空值崩潰)
-                const title = props["名稱"]?.title?.[0]?.plain_text || "未命名物件";
-                const price = props["總價"]?.number ? props["總價"].number.toLocaleString() : "面議";
-                const size = props["坪數"]?.number || "0";
-                const age = props["屋齡"]?.number || "0";
-                const type = props["類型"]?.select?.name || "精選";
-                const rooms = props["房"]?.number || "0";
+                const name = p["名稱"]?.title[0]?.plain_text || "精選房屋物件";
+                const price = p["總價"]?.number || "面議";
+                const size = p["坪數"]?.number || "--";
+                const age = p["屋齡"]?.number || "--";
+                const room = p["房"]?.number || 0;
+                const hall = p["廳"]?.number || 0;
+                const bath = p["衛"]?.number || 0;
+                const park = p["車位"]?.select?.name || "無車位";
 
-                return `
-                    <div class="property-card group cursor-pointer" onclick="openPropertyContact('${title}')" style="animation-delay: ${index * 0.1}s">
-                        <div class="aspect-[16/10] bg-stone-100 mb-8 overflow-hidden relative shadow-sm rounded-sm">
-                            <img src="${cover}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" loading="lazy">
-                            <div class="absolute top-6 left-6 flex gap-2">
-                                <span class="bg-stone-900/80 backdrop-blur-md text-white text-[9px] font-bold px-4 py-2 uppercase tracking-widest rounded-full">${type}</span>
-                                ${age < 5 ? '<span class="bg-gold text-white text-[9px] font-bold px-4 py-2 uppercase tracking-widest rounded-full">新成屋</span>' : ''}
-                            </div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-8">
-                                <p class="text-white text-[10px] font-bold tracking-[0.4em] uppercase">查看詳情並聯絡專員 <i data-lucide="arrow-right" class="inline w-3 h-3 ml-2"></i></p>
+                container.innerHTML += `
+                    <div class="property-card group cursor-pointer" onclick="alert('詳細物件說明已整合於官方 LINE，歡迎諮詢：${name}')">
+                        <div class="aspect-[16/10] bg-stone-100 mb-6 overflow-hidden relative shadow-sm">
+                            <img src="${cover}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+                            <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-1 text-[9px] font-bold tracking-widest uppercase">
+                                ${p["類型"]?.select?.name || "精選"}
                             </div>
                         </div>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-start">
-                                <h3 class="serif text-2xl font-bold text-stone-900 group-hover:text-gold transition-colors">${title}</h3>
-                                <div class="text-right">
-                                    <p class="text-red-500 font-bold text-2xl font-serif">${price}${price !== '面議' ? '<span class="text-xs ml-1 font-sans">萬</span>' : ''}</p>
-                                </div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="serif text-2xl font-bold text-stone-900 group-hover:text-[#b4a082] transition-colors">${name}</h3>
+                            <div class="text-right">
+                                <p class="text-red-600 font-bold text-xl">${price}<span class="text-xs ml-1 font-normal">萬</span></p>
                             </div>
-                            <div class="flex items-center gap-6 text-[11px] text-stone-400 font-bold tracking-widest uppercase border-t border-stone-50 pt-4">
-                                <div class="flex items-center gap-2"><i data-lucide="maximize" class="w-3 h-3"></i> ${size} 坪</div>
-                                <div class="flex items-center gap-2"><i data-lucide="layout" class="w-3 h-3"></i> ${rooms} 房</div>
-                                <div class="flex items-center gap-2"><i data-lucide="clock" class="w-3 h-3"></i> ${age} 年</div>
-                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 text-[11px] text-stone-400 tracking-widest uppercase">
+                            <span>${size} 坪</span>
+                            <span class="w-[1px] h-3 bg-stone-200"></span>
+                            <span>${room}房 ${hall}廳 ${bath}衛</span>
+                            <span class="w-[1px] h-3 bg-stone-200"></span>
+                            <span>${age} 年屋齡</span>
+                            <span class="w-[1px] h-3 bg-stone-200"></span>
+                            <span>${park}</span>
                         </div>
                     </div>`;
-            }).join('');
-            
-            lucide.createIcons();
+            });
         }
 
-        /**
-         * 7. 進階篩選演算法
-         */
         function applyFilters() {
             const type = document.querySelector('#filter-type .active').dataset.value;
             const parking = document.querySelector('#filter-parking .active').dataset.value;
-            const priceLimit = parseFloat(document.getElementById('f-price').value) || Infinity;
-            const sizeMin = parseFloat(document.getElementById('f-size').value) || 0;
-            const ageMax = parseFloat(document.getElementById('f-age').value) || Infinity;
-            const roomMin = parseFloat(document.getElementById('f-room').value) || 0;
-            const hallMin = parseFloat(document.getElementById('f-hall').value) || 0;
-            const bathMin = parseFloat(document.getElementById('f-bath').value) || 0;
+            const price = parseFloat(document.getElementById('f-price').value) || Infinity;
+            const size = parseFloat(document.getElementById('f-size').value) || 0;
+            const age = parseFloat(document.getElementById('f-age').value) || Infinity;
+            const room = parseFloat(document.getElementById('f-room').value) || 0;
+            const hall = parseFloat(document.getElementById('f-hall').value) || 0;
+            const bath = parseFloat(document.getElementById('f-bath').value) || 0;
 
             const filtered = allEstates.filter(item => {
                 const p = item.properties;
                 const matchesType = (type === "全部" || p["類型"]?.select?.name === type);
                 const matchesParking = (parking === "不限" || p["車位"]?.select?.name === parking);
                 
-                const price = p["總價"]?.number || 0;
-                const size = p["坪數"]?.number || 0;
-                const age = p["屋齡"]?.number || 0;
-                const room = p["房"]?.number || 0;
-                const hall = p["廳"]?.number || 0;
-                const bath = p["衛"]?.number || 0;
+                const valPrice = p["總價"]?.number || 0;
+                const valSize = p["坪數"]?.number || 0;
+                const valAge = p["屋齡"]?.number || 0;
+                const valRoom = p["房"]?.number || 0;
+                const valHall = p["廳"]?.number || 0;
+                const valBath = p["衛"]?.number || 0;
 
-                return matchesType && 
-                       matchesParking && 
-                       price <= priceLimit && 
-                       size >= sizeMin && 
-                       age <= ageMax && 
-                       room >= roomMin &&
-                       hall >= hallMin &&
-                       bath >= bathMin;
+                return matchesType && matchesParking && 
+                       valPrice <= price && valSize >= size && 
+                       valAge <= age && valRoom >= room && 
+                       valHall >= hall && valBath >= bath;
             });
 
             renderEstates(filtered);
-            document.getElementById('prop-count').innerText = `檢索結果：共 ${filtered.length} 筆物件`;
-            
-            // 自動滾動至列表開頭
+            document.getElementById('prop-count').innerText = `篩選出 ${filtered.length} 個物件`;
             document.getElementById('estate-list-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        /**
-         * 8. 篩選標籤選擇處理
-         */
         function selectFilter(el) {
             el.parentElement.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
-            // 即時反應
-            applyFilters();
         }
 
-        /**
-         * 9. 重置所有篩選條件
-         */
-        function resetFilters() {
-            document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
-            document.querySelector('#filter-type .filter-tag[data-value="全部"]').classList.add('active');
-            document.querySelector('#filter-parking .filter-tag[data-value="不限"]').classList.add('active');
-            
-            const inputs = ['f-price', 'f-size', 'f-age', 'f-room', 'f-hall', 'f-bath'];
-            inputs.forEach(id => document.getElementById(id).value = '');
-            
-            renderEstates(allEstates);
-            document.getElementById('prop-count').innerText = `目前共有 ${allEstates.length} 個精選物件`;
-        }
-
-        /**
-         * 10. 預約單提交邏輯
-         */
         async function submitBooking() {
             const btn = document.getElementById('booking-btn');
             const data = {
                 type: "BOOKING",
-                name: document.getElementById('booking-name').value.trim(),
-                tel: document.getElementById('booking-tel').value.trim(),
+                name: document.getElementById('booking-name').value,
+                tel: document.getElementById('booking-tel').value,
                 date: document.getElementById('booking-date').value,
                 plan: document.getElementById('booking-plan').selectedOptions[0].dataset.name,
                 price: parseInt(document.getElementById('booking-plan').value)
             };
             
-            // 表單校驗
             if(!data.name || !data.tel || !data.date) {
-                showToast("請填寫完整的預約聯絡資料", "error");
+                alert('請完整填寫預約欄位，讓我們能為您保留時段。');
                 return;
             }
-
-            // 防止連點
+            
+            btn.innerText = "正在傳送預約資料至雲端...";
             btn.disabled = true;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> 正在建立預約單...`;
-            lucide.createIcons();
-
+            
             try {
-                const response = await fetch(workerUrl, {
-                    method: 'POST',
+                const res = await fetch(workerUrl, { 
+                    method: 'POST', 
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(data) 
                 });
-
-                if (response.ok) {
-                    document.getElementById('success-modal').style.display = 'flex';
+                if(res.ok) { 
+                    document.getElementById('success-modal').style.display = 'flex'; 
                 } else {
-                    throw new Error("API Submission Failed");
+                    throw new Error('Server Error');
                 }
-            } catch (e) {
-                console.error("Booking Error:", e);
-                showToast("預約系統暫時忙碌中，請直接透過 LINE 聯繫鄭先生", "error");
-            } finally {
+            } catch (e) { 
+                alert('連線失敗，請檢查網路狀態或直接聯繫官方 LINE。'); 
+            } finally { 
+                btn.innerText = "確認提交預約申請"; 
                 btn.disabled = false;
-                btn.innerHTML = originalText;
-                lucide.createIcons();
             }
         }
 
-        /**
-         * 11. 後台：發佈新物件至 Notion
-         */
+        async function loadBookings() {
+            const tbody = document.getElementById('stat-table-body');
+            tbody.innerHTML = '<tr><td colspan="4" class="p-20 text-center animate-pulse italic text-stone-300">正在獲取最新營運數據...</td></tr>';
+            
+            try {
+                const res = await fetch(`${workerUrl}?type=BOOKING`);
+                const data = await res.json();
+                const list = data.results || [];
+                let totalRevenue = 0;
+                
+                tbody.innerHTML = list.length ? '' : '<tr><td colspan="4" class="p-20 text-center text-stone-300">尚未有任何預約紀錄</td></tr>';
+                
+                list.forEach(b => {
+                    const p = b.properties;
+                    const amount = p["金額"]?.number || 0;
+                    totalRevenue += amount;
+                    
+                    tbody.innerHTML += `
+                        <tr class="border-b border-stone-50 hover:bg-stone-50 transition-colors">
+                            <td class="p-5 font-medium text-stone-900">${p["預約日期"]?.date?.start || "--"}</td>
+                            <td class="p-5">
+                                <div class="font-bold">${p["名稱"]?.title[0]?.plain_text || "無名"}</div>
+                                <div class="text-[10px] text-stone-400">${p["電話"]?.rich_text[0]?.plain_text || "--"}</div>
+                            </td>
+                            <td class="p-5">
+                                <span class="bg-stone-100 px-2 py-1 rounded-sm text-[10px] uppercase font-bold text-stone-600">
+                                    ${p["方案"]?.select?.name || "一般方案"}
+                                </span>
+                            </td>
+                            <td class="p-5 font-bold text-green-600">NT$ ${amount.toLocaleString()}</td>
+                        </tr>`;
+                });
+                
+                document.getElementById('stat-revenue').innerText = `NT$ ${totalRevenue.toLocaleString()}`;
+                document.getElementById('stat-count').innerText = list.length;
+                lucide.createIcons();
+            } catch (e) { 
+                tbody.innerHTML = '<tr><td colspan="4" class="p-20 text-center text-red-400">數據讀取失敗</td></tr>'; 
+            }
+        }
+
         async function submitProperty(event) {
-            const btn = event.currentTarget;
+            const btn = event.target;
+            const originalText = btn.innerText;
+            
             const payload = {
                 type: "ESTATE",
                 properties: {
-                    "名稱": { title: [{ text: { content: document.getElementById('prop-name').value.trim() } }] },
+                    "名稱": { title: [{ text: { content: document.getElementById('prop-name').value } }] },
                     "總價": { number: parseFloat(document.getElementById('prop-price').value) || 0 },
                     "坪數": { number: parseFloat(document.getElementById('prop-size').value) || 0 },
                     "屋齡": { number: parseFloat(document.getElementById('prop-age').value) || 0 },
@@ -1104,114 +886,45 @@
                     "廳": { number: parseFloat(document.getElementById('prop-hall').value) || 0 },
                     "衛": { number: parseFloat(document.getElementById('prop-bath').value) || 0 }
                 },
-                cover_url: document.getElementById('prop-img-url').value.trim() 
+                cover_url: document.getElementById('prop-img-url').value 
             };
 
-            if(!payload.properties["名稱"].title[0].text.content) {
-                showToast("物件名稱為必填項目", "error");
-                return;
-            }
+            if(!payload.properties["名稱"].title[0].text.content) return alert("請輸入物件名稱");
 
+            btn.innerText = "正在連線 Notion API 並同步...";
             btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> 正在上架並同步 Notion 資料庫...`;
-            lucide.createIcons();
-            
-            try {
-                const res = await fetch(workerUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
 
+            try {
+                const res = await fetch(workerUrl, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload) 
+                });
                 if (res.ok) { 
-                    showToast("物件已成功上架並進入雲端排程", "success");
-                    // 清空表單或刷新
-                    setTimeout(() => location.reload(), 1500);
+                    alert("✅ 雲端同步成功！物件已正式上線。"); 
+                    location.reload(); 
                 } else {
-                    const errorMsg = await res.text();
-                    throw new Error(errorMsg || "API Connection Lost");
+                    alert("❌ 同步失敗，請確認 API Key 有效性");
                 }
             } catch (e) { 
-                console.error("Submit Estate Error:", e);
-                showToast("發佈失敗：伺服器連線異常，請檢查 API Key", "error");
-            } finally {
+                alert("❌ 網路連線異常"); 
+            } finally { 
+                btn.innerText = originalText; 
                 btn.disabled = false;
-                btn.innerHTML = `立即發佈並與 Notion 同步`;
-                lucide.createIcons();
             }
         }
 
-        /**
-         * 12. 後台：載入與分析預約報表 (重點數據化)
-         */
-        async function loadBookings() {
-            const tbody = document.getElementById('stat-table-body');
-            const revenueDisplay = document.getElementById('stat-revenue');
-            const countDisplay = document.getElementById('stat-count');
-            const avgDisplay = document.getElementById('stat-avg');
-
-            tbody.innerHTML = '<tr><td colspan="4" class="p-20 text-center"><i data-lucide="loader-2" class="mx-auto animate-spin w-10 h-10 text-gold"></i></td></tr>';
-            lucide.createIcons();
-
-            try {
-                const res = await fetch(`${workerUrl}?type=BOOKING`);
-                const data = await res.json();
-                const list = data.results || [];
-                
-                let totalRevenue = 0;
-                tbody.innerHTML = list.length ? '' : '<tr><td colspan="4" class="p-20 text-center text-stone-300 font-serif italic uppercase tracking-widest">No Booking Records Found</td></tr>';
-                
-                list.forEach(item => {
-                    const p = item.properties;
-                    const amount = p["金額"]?.number || 0;
-                    const date = p["預約日期"]?.date?.start || "未設定";
-                    const client = p["名稱"]?.title[0]?.plain_text || "訪客";
-                    const plan = p["方案"]?.select?.name || "未知方案";
-                    
-                    totalRevenue += amount;
-                    
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-stone-50 transition-colors group">
-                            <td class="p-8 font-medium text-stone-900 border-l-4 border-transparent group-hover:border-gold transition-all">${date}</td>
-                            <td class="p-8">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-[10px] font-bold">${client.charAt(0)}</div>
-                                    ${client}
-                                </div>
-                            </td>
-                            <td class="p-8 text-center">
-                                <span class="status-badge bg-stone-100 text-stone-500">${plan}</span>
-                            </td>
-                            <td class="p-8 text-right font-bold text-stone-900 font-serif">NT$ ${amount.toLocaleString()}</td>
-                        </tr>`;
-                });
-
-                // 更新數據大卡片
-                revenueDisplay.innerText = totalRevenue.toLocaleString();
-                countDisplay.innerText = list.length;
-                avgDisplay.innerText = list.length ? (totalRevenue / list.length).toFixed(0) : "0";
-                
-                showToast("數據分析已更新", "success");
-            } catch (e) { 
-                console.error("Load Booking Stat Error:", e);
-                tbody.innerHTML = '<tr><td colspan="4" class="p-20 text-center text-red-400 font-bold text-xs">數據同步失敗，請檢查 API 反饋。</td></tr>'; 
-            }
-        }
-
-        /**
-         * 13. 後台：圖片處理系統
-         */
         function handleImgPreview(files, targetId) {
             const target = document.getElementById(targetId);
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const div = document.createElement('div');
-                    div.className = 'preview-box group animate-fade-in';
+                    div.className = 'preview-box';
                     div.innerHTML = `
-                        <img src="${e.target.result}" class="w-full h-full object-cover rounded-sm">
+                        <img src="${e.target.result}">
                         <div class="img-del" onclick="this.parentElement.remove()">
-                            <i data-lucide="x" class="w-4 h-4"></i>
+                            <i data-lucide="x" class="w-3 h-3"></i>
                         </div>`;
                     target.appendChild(div);
                     lucide.createIcons();
@@ -1220,94 +933,43 @@
             });
         }
 
-        /**
-         * 14. 後台：環境影像保存
-         */
         function saveOfficeChanges() {
-            const images = document.querySelectorAll('#office-preview img');
-            if (images.length > 0) {
-                // 此處應有 API 上傳至存儲桶(S3/Cloudinary)的邏輯
-                document.getElementById('home-hero-img').src = images[0].src;
-                showToast("首頁視覺預覽已更新", "success");
+            const imgs = document.querySelectorAll('#office-preview img');
+            if (imgs.length > 0) {
+                document.getElementById('home-hero-img').src = imgs[0].src;
+                alert("✅ 影像緩存已更新，首頁封面已同步。");
             }
         }
 
-        /**
-         * 15. 後台：標籤切換管理
-         */
         function switchAdminTab(id, el) {
             document.querySelectorAll('.admin-content').forEach(c => c.classList.add('hidden'));
             document.getElementById('adm-' + id).classList.remove('hidden');
-            
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
-            
             if (id === 'stat') loadBookings();
         }
 
-        /**
-         * 16. 工具函數：複製帳號
-         */
-        function copyAccount() {
-            const acc = "473540642102";
-            navigator.clipboard.writeText(acc);
-            showToast("帳號已複製到剪貼簿", "success");
+        function copyAcc() { 
+            navigator.clipboard.writeText("473540642102").then(() => {
+                const btn = document.querySelector('[onclick="copyAcc()"]');
+                btn.innerHTML = '<i data-lucide="check" class="w-3 h-3 text-green-500"></i> 已複製';
+                lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML = '<i data-lucide="copy" class="w-3 h-3"></i> 點擊複製帳號';
+                    lucide.createIcons();
+                }, 2000);
+            }); 
         }
-
-        /**
-         * 17. 工具函數：顯示輕彈窗 (Toast)
-         */
-        function showToast(msg, type = "success") {
-            const toast = document.createElement('div');
-            toast.className = `fixed bottom-10 left-1/2 -translate-x-1/2 px-10 py-5 rounded-sm shadow-2xl z-[3000] text-[11px] font-bold tracking-widest uppercase flex items-center gap-4 animate-slide-up
-                ${type === 'success' ? 'bg-stone-900 text-white border-t-4 border-gold' : 'bg-red-500 text-white'}`;
-            
-            const icon = type === 'success' ? 'check' : 'alert-circle';
-            toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4"></i> ${msg}`;
-            
-            document.body.appendChild(toast);
-            lucide.createIcons();
-            
-            setTimeout(() => {
-                toast.classList.add('opacity-0');
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
-        }
-
-        /**
-         * 18. 工具函數：生成骨架屏
-         */
-        function generateSkeleton(count) {
-            let html = '';
-            for(let i=0; i<count; i++) {
-                html += `
-                    <div class="space-y-6">
-                        <div class="aspect-[16/10] skeleton rounded-sm"></div>
-                        <div class="h-8 skeleton w-2/3"></div>
-                        <div class="h-4 skeleton w-full"></div>
-                        <div class="h-4 skeleton w-1/2"></div>
-                    </div>`;
-            }
-            return html;
-        }
-
-        /**
-         * 19. 特殊互動：房產聯絡轉發
-         */
-        function openPropertyContact(name) {
-            const lineUrl = `https://lin.ee/WexkD85?text=${encodeURIComponent('你好，我對「' + name + '」這個案件感興趣，想了解更多資訊。')}`;
-            window.open(lineUrl, '_blank');
-        }
-
-        // 啟動首屏動畫與數據
-        window.onload = () => {
-            console.log("Han's HouseTalk System Initialized.");
-            lucide.createIcons();
-        };
-
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
 
 
 
