@@ -143,6 +143,15 @@
 
         .swiper-button-next, .swiper-button-prev { color: white; transform: scale(0.7); }
         .swiper-pagination-bullet-active { background: var(--gold) !important; }
+        
+        /* 管理後台清單樣式 */
+        .admin-list-item {
+            border-bottom: 1px solid var(--stone-100);
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-stone-art">
@@ -189,7 +198,7 @@
                 </div>
                 <nav class="flex flex-col gap-10">
                     <div class="overflow-hidden">
-                        <h3 onclick="navigateTo('home')" class="text-4xl md:text-5xl font-bold serif cursor-pointer hover:translate-x-4 transition-transform duration-500">首頁 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">HOME</span></h3>
+                        <h3 onclick="navigateTo('home')" class="text-4xl md:text-5xl font-bold serif serif cursor-pointer hover:translate-x-4 transition-transform duration-500">首頁 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">HOME</span></h3>
                     </div>
                     <div class="overflow-hidden">
                         <h3 onclick="navigateTo('realestate')" class="text-4xl md:text-5xl font-bold serif cursor-pointer hover:translate-x-4 transition-transform duration-500">房地產物件 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">ESTATE</span></h3>
@@ -470,11 +479,15 @@
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-x-8 gap-y-10">
-                            <div class="col-span-full">
+                            <input type="hidden" id="prop-id"> <div class="col-span-full">
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block tracking-widest">物件標題名稱</label>
                                 <input type="text" id="prop-name" placeholder="例如：西區台灣大道美宅" class="art-input font-bold text-lg">
                             </div>
                             
+                            <div class="md:col-span-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block tracking-widest">詳細地址</label>
+                                <input type="text" id="prop-address" placeholder="請輸入完整地址" class="art-input">
+                            </div>
                             <div class="space-y-2">
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">銷售總價 (萬)</label>
                                 <input type="number" id="prop-price" class="art-input">
@@ -483,22 +496,22 @@
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">權狀坪數</label>
                                 <input type="number" id="prop-size" class="art-input">
                             </div>
+
                             <div class="space-y-2">
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">屋齡 (年)</label>
                                 <input type="number" id="prop-age" class="art-input">
                             </div>
                             <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">房數</label>
-                                <input type="number" id="prop-room" class="art-input" placeholder="房">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">房 / 廳 / 衛</label>
+                                <div class="flex gap-2">
+                                    <input type="number" id="prop-room" class="art-input text-center" placeholder="房">
+                                    <input type="number" id="prop-hall" class="art-input text-center" placeholder="廳">
+                                    <input type="number" id="prop-bath" class="art-input text-center" placeholder="衛">
+                                </div>
                             </div>
-
                             <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">廳數</label>
-                                <input type="number" id="prop-hall" class="art-input" placeholder="廳">
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">衛浴數</label>
-                                <input type="number" id="prop-bath" class="art-input" placeholder="衛">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">陽台數量</label>
+                                <input type="number" id="prop-balcony" class="art-input" placeholder="個">
                             </div>
                             <div class="space-y-2">
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">建築類型</label>
@@ -510,17 +523,26 @@
                                     <option value="土地">土地開發</option>
                                 </select>
                             </div>
+
                             <div class="space-y-2">
-                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">車位配置</label>
-                                <select id="prop-parking" class="art-input">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">車位類型</label>
+                                <select id="prop-parking-type" class="art-input">
                                     <option value="平面車位">平面大車位</option>
                                     <option value="機械車位">機械升降車位</option>
                                     <option value="無車位">無提供車位</option>
                                 </select>
                             </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">車位數量</label>
+                                <input type="number" id="prop-parking-count" class="art-input" value="0">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">車位坪數</label>
+                                <input type="number" id="prop-parking-size" class="art-input" placeholder="坪">
+                            </div>
 
                             <div class="col-span-full space-y-4">
-                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block tracking-widest">物件照片管理 (可多張，第一張為封面)</label>
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block tracking-widest">物件照片管理 (第一張為封面)</label>
                                 <div id="estate-img-preview" class="grid grid-cols-2 md:grid-cols-4 gap-6">
                                     <div onclick="document.getElementById('fileInProp').click()" class="preview-box border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-300 cursor-pointer hover:bg-stone-50 transition-all">
                                         <i data-lucide="image-plus" class="w-8 h-8 mb-2"></i>
@@ -531,10 +553,18 @@
                             </div>
                         </div>
 
-                        <div class="pt-8">
-                            <button onclick="submitProperty(event)" id="submit-prop-btn" class="w-full bg-[#b4a082] text-white py-6 font-bold text-[11px] uppercase tracking-[0.5em] hover:bg-stone-900 transition-all shadow-xl">
-                                上傳資料並同步至 Notion 雲端
+                        <div class="pt-8 flex gap-4">
+                            <button onclick="submitProperty(event)" id="submit-prop-btn" class="flex-1 bg-[#b4a082] text-white py-6 font-bold text-[11px] uppercase tracking-[0.5em] hover:bg-stone-900 transition-all shadow-xl">
+                                上傳/更新資料並同步
                             </button>
+                            <button onclick="resetAdminForm()" class="px-8 border border-stone-200 text-stone-400 text-[10px] uppercase font-bold hover:bg-stone-50">清空重填</button>
+                        </div>
+
+                        <div class="mt-20">
+                            <h4 class="serif text-xl font-bold mb-6 border-b pb-4">目前已發佈物件</h4>
+                            <div id="admin-property-list" class="space-y-2">
+                                <p class="text-stone-300 text-sm italic">正在讀取雲端物件...</p>
+                            </div>
                         </div>
                     </div>
 
@@ -619,7 +649,7 @@
     <script>
         const workerUrl = 'https://hanxuan.hank30005.workers.dev';
         let allEstates = []; 
-        let currentPropImagesFiles = []; // 關鍵調整：儲存實際檔案供上傳
+        let currentPropImagesFiles = []; 
         
         function getAuthCredentials() {
             const savedU = localStorage.getItem('han_admin_u') || 'admin';
@@ -673,8 +703,8 @@
                 toggleSideMenu(false);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 if(id === 'home' && homeSwiper) homeSwiper.update();
+                if (id === 'realestate' || id === 'admin') loadRealEstate();
             }
-            if (id === 'realestate') loadRealEstate();
         }
 
         function toggleSideMenu(open) { 
@@ -684,17 +714,43 @@
 
         async function loadRealEstate() {
             const container = document.getElementById('estate-list-container');
+            const admList = document.getElementById('admin-property-list');
             const countDisplay = document.getElementById('prop-count');
-            container.innerHTML = '<div class="col-span-full py-40 text-center text-stone-300 serif text-xl tracking-widest italic animate-pulse">正在同步雲端物件數據...</div>';
+            
+            if(container) container.innerHTML = '<div class="col-span-full py-20 text-center text-stone-300 serif animate-pulse">正在同步雲端物件數據...</div>';
             
             try {
                 const response = await fetch(workerUrl);
                 const data = await response.json();
                 allEstates = data.results || [];
-                renderEstates(allEstates);
-                countDisplay.innerText = `顯示 ${allEstates.length} 個物件`;
+                
+                if(container) {
+                    renderEstates(allEstates);
+                    countDisplay.innerText = `顯示 ${allEstates.length} 個物件`;
+                }
+                
+                // 後台管理清單渲染
+                if(admList) {
+                    admList.innerHTML = '';
+                    allEstates.forEach(item => {
+                        const name = item.properties["名稱"]?.title[0]?.plain_text || "未命名物件";
+                        const id = item.id;
+                        admList.innerHTML += `
+                            <div class="admin-list-item">
+                                <div>
+                                    <span class="text-sm font-bold text-stone-800">${name}</span>
+                                    <p class="text-[10px] text-stone-400">ID: ${id}</p>
+                                </div>
+                                <div class="flex gap-4">
+                                    <button onclick="editProperty('${id}')" class="text-xs text-blue-500 hover:underline">編輯</button>
+                                    <button onclick="deleteProperty('${id}')" class="text-xs text-red-500 hover:underline">刪除</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
             } catch (err) {
-                container.innerHTML = '<div class="col-span-full py-20 text-center text-red-300">連線至資料庫失敗。</div>';
+                if(container) container.innerHTML = '<div class="col-span-full py-20 text-center text-red-300">連線至資料庫失敗。</div>';
             }
         }
 
@@ -736,6 +792,114 @@
             });
         }
 
+        // 後台編輯功能
+        function editProperty(id) {
+            const item = allEstates.find(e => e.id === id);
+            if(!item) return;
+            const p = item.properties;
+
+            document.getElementById('prop-id').value = id;
+            document.getElementById('prop-name').value = p["名稱"]?.title[0]?.plain_text || "";
+            document.getElementById('prop-price').value = p["總價"]?.number || "";
+            document.getElementById('prop-size').value = p["坪數"]?.number || "";
+            document.getElementById('prop-age').value = p["屋齡"]?.number || "";
+            document.getElementById('prop-room').value = p["房"]?.number || "";
+            document.getElementById('prop-hall').value = p["廳"]?.number || "";
+            document.getElementById('prop-bath').value = p["衛"]?.number || "";
+            document.getElementById('prop-address').value = p["地址"]?.rich_text[0]?.plain_text || "";
+            document.getElementById('prop-balcony').value = p["陽台"]?.number || "";
+            document.getElementById('prop-parking-size').value = p["車位坪數"]?.number || "";
+            document.getElementById('prop-parking-count').value = p["車位數量"]?.number || 0;
+            document.getElementById('prop-type-val').value = p["類型"]?.select?.name || "大樓";
+            document.getElementById('prop-parking-type').value = p["車位"]?.select?.name || "無車位";
+
+            window.scrollTo({ top: 200, behavior: 'smooth' });
+            alert("已載入物件資料至上方表單，修改後點擊上傳即可更新。");
+        }
+
+        // 後台刪除功能
+        async function deleteProperty(id) {
+            if(!confirm("確定要從雲端永久刪除此物件嗎？")) return;
+            try {
+                const res = await fetch(`${workerUrl}/delete?id=${id}`, { method: 'DELETE' });
+                if(res.ok) {
+                    alert("✅ 物件已成功移除");
+                    loadRealEstate();
+                } else {
+                    alert("❌ 刪除失敗");
+                }
+            } catch(e) {
+                alert("❌ 連線 Worker 失敗");
+            }
+        }
+
+        function resetAdminForm() {
+            document.getElementById('prop-id').value = "";
+            document.getElementById('prop-name').value = "";
+            document.getElementById('prop-address').value = "";
+            document.getElementById('prop-price').value = "";
+            document.getElementById('prop-size').value = "";
+            document.getElementById('prop-age').value = "";
+            document.getElementById('prop-room').value = "";
+            document.getElementById('prop-hall').value = "";
+            document.getElementById('prop-bath').value = "";
+            document.getElementById('prop-balcony').value = "";
+            document.getElementById('prop-parking-size').value = "";
+            document.getElementById('prop-parking-count').value = 0;
+            document.getElementById('estate-img-preview').innerHTML = `<div onclick="document.getElementById('fileInProp').click()" class="preview-box border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-300 cursor-pointer hover:bg-stone-50 transition-all"><i data-lucide="image-plus" class="w-8 h-8 mb-2"></i><span class="text-[9px] font-bold tracking-widest uppercase">Add Photo</span></div>`;
+            currentPropImagesFiles = [];
+            lucide.createIcons();
+        }
+
+        async function submitProperty(event) {
+            const btn = document.getElementById('submit-prop-btn');
+            const propId = document.getElementById('prop-id').value; // 如果有值代表是編輯
+
+            if(!document.getElementById('prop-name').value) { alert("請輸入物件名稱"); return; }
+
+            btn.innerText = "正在處理並同步雲端...";
+            btn.disabled = true;
+
+            try {
+                const finalFormData = new FormData();
+                if(currentPropImagesFiles.length > 0) {
+                    finalFormData.append("image", currentPropImagesFiles[0]);
+                }
+                
+                finalFormData.append("propId", propId); // 傳送 ID 供 Worker 判斷是新增還是更新
+                finalFormData.append("title", document.getElementById('prop-name').value);
+                finalFormData.append("address", document.getElementById('prop-address').value);
+                finalFormData.append("price", document.getElementById('prop-price').value);
+                finalFormData.append("size", document.getElementById('prop-size').value);
+                finalFormData.append("age", document.getElementById('prop-age').value);
+                finalFormData.append("room", document.getElementById('prop-room').value);
+                finalFormData.append("hall", document.getElementById('prop-hall').value);
+                finalFormData.append("bath", document.getElementById('prop-bath').value);
+                finalFormData.append("balcony", document.getElementById('prop-balcony').value);
+                finalFormData.append("parking_size", document.getElementById('prop-parking-size').value);
+                finalFormData.append("parking_count", document.getElementById('prop-parking-count').value);
+                finalFormData.append("type_val", document.getElementById('prop-type-val').value);
+                finalFormData.append("parking_type", document.getElementById('prop-parking-type').value);
+
+                const res = await fetch(`${workerUrl}/upload`, { 
+                    method: 'POST', 
+                    body: finalFormData 
+                });
+
+                if (res.ok) { 
+                    alert("✅ 物件同步成功！"); 
+                    location.reload(); 
+                } else { 
+                    alert("❌ 同步失敗，請檢查 Worker 端紀錄"); 
+                }
+            } catch (e) { 
+                alert("❌ 網路連線失敗");
+            } finally { 
+                btn.innerText = "上傳資料並同步至 Notion 雲端"; 
+                btn.disabled = false; 
+            }
+        }
+
         function applyFilters() {
             const type = document.querySelector('#filter-type .active').dataset.value;
             const parking = document.querySelector('#filter-parking .active').dataset.value;
@@ -756,57 +920,10 @@
             el.classList.add('active');
         }
 
-        // --- 物件發布邏輯：改為傳送 FormData 給 Worker ---
-        async function submitProperty(event) {
-            const btn = document.getElementById('submit-prop-btn');
-            const propName = document.getElementById('prop-name').value;
-            
-            if(currentPropImagesFiles.length === 0) { alert("請至少選擇一張物件照片作為封面"); return; }
-            if(!propName) { alert("請輸入物件名稱"); return; }
-
-            btn.innerText = "正在上傳圖片並同步 Notion...";
-            btn.disabled = true;
-
-            try {
-                const finalFormData = new FormData();
-                // 傳送第一個選取的檔案給 Worker
-                finalFormData.append("image", currentPropImagesFiles[0]); 
-                finalFormData.append("title", propName);
-                finalFormData.append("price", document.getElementById('prop-price').value || 0);
-                finalFormData.append("size", document.getElementById('prop-size').value || 0);
-                finalFormData.append("age", document.getElementById('prop-age').value || 0);
-                finalFormData.append("room", document.getElementById('prop-room').value || 0);
-                finalFormData.append("hall", document.getElementById('prop-hall').value || 0);
-                finalFormData.append("bath", document.getElementById('prop-bath').value || 0);
-                finalFormData.append("type_val", document.getElementById('prop-type-val').value);
-                finalFormData.append("parking", document.getElementById('prop-parking').value);
-
-                const res = await fetch(`${workerUrl}/upload`, { 
-                    method: 'POST', 
-                    body: finalFormData 
-                });
-
-                if (res.ok) { 
-                    alert("✅ 物件已成功上傳！Notion 資料同步中，請稍後刷新頁面。"); 
-                    location.reload(); 
-                } else { 
-                    const errMsg = await res.text();
-                    alert("❌ 同步失敗: " + errMsg); 
-                }
-            } catch (e) { 
-                alert("❌ 連線 Worker 失敗，請確認 Worker 是否在運行中。");
-                console.error(e);
-            } finally { 
-                btn.innerText = "上傳資料並同步至 Notion 雲端"; 
-                btn.disabled = false; 
-            }
-        }
-
-        // 圖片預覽調整：儲存檔案到陣列中
         function handleImgPreview(files, targetId, isSingle = false, context = 'estate') {
             const target = document.getElementById(targetId);
             Array.from(files).forEach(file => {
-                if(context === 'estate') currentPropImagesFiles.push(file); 
+                if(context === 'estate') currentPropImagesFiles.push(file);
                 
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -822,9 +939,9 @@
 
         function removeImg(el, context) {
             const box = el.parentElement;
-            // 簡單處理：從陣列中移除第一個檔案 (實作應根據索引)
             if(context === 'estate') currentPropImagesFiles.shift(); 
             box.remove();
+            lucide.createIcons();
         }
 
         function saveOfficeChanges() {
