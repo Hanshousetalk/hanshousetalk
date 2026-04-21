@@ -189,7 +189,7 @@
                 </div>
                 <nav class="flex flex-col gap-10">
                     <div class="overflow-hidden">
-                        <h3 onclick="navigateTo('home')" class="text-4xl md:text-5xl font-bold serif serif cursor-pointer hover:translate-x-4 transition-transform duration-500">首頁 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">HOME</span></h3>
+                        <h3 onclick="navigateTo('home')" class="text-4xl md:text-5xl font-bold serif cursor-pointer hover:translate-x-4 transition-transform duration-500">首頁 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">HOME</span></h3>
                     </div>
                     <div class="overflow-hidden">
                         <h3 onclick="navigateTo('realestate')" class="text-4xl md:text-5xl font-bold serif cursor-pointer hover:translate-x-4 transition-transform duration-500">房地產物件 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">ESTATE</span></h3>
@@ -618,10 +618,8 @@
 
     <script>
         const workerUrl = 'https://hanxuan.hank30005.workers.dev';
-        // 抓取雲端環境變數 (需在 Worker 呼叫時帶回或直接寫死在 Worker 邏輯中)
-        // 這裡為了讓前端能上傳，我們改用動態上傳到 Cloudinary 的邏輯
         let allEstates = []; 
-        let currentPropImagesFiles = []; // 改為儲存 File 物件
+        let currentPropImagesFiles = []; // 關鍵調整：儲存實際檔案供上傳
         
         function getAuthCredentials() {
             const savedU = localStorage.getItem('han_admin_u') || 'admin';
@@ -758,58 +756,57 @@
             el.classList.add('active');
         }
 
-        // --- 核心上傳邏輯修改 ---
+        // --- 物件發布邏輯：改為傳送 FormData 給 Worker ---
         async function submitProperty(event) {
-    const btn = document.getElementById('submit-prop-btn');
-    
-    if(currentPropImagesFiles.length === 0) { alert("請至少選擇一張物件照片"); return; }
-    if(!document.getElementById('prop-name').value) { alert("請輸入物件名稱"); return; }
+            const btn = document.getElementById('submit-prop-btn');
+            const propName = document.getElementById('prop-name').value;
+            
+            if(currentPropImagesFiles.length === 0) { alert("請至少選擇一張物件照片作為封面"); return; }
+            if(!propName) { alert("請輸入物件名稱"); return; }
 
-    btn.innerText = "正在處理圖片並同步至雲端...";
-    btn.disabled = true;
+            btn.innerText = "正在上傳圖片並同步 Notion...";
+            btn.disabled = true;
 
-    try {
-        const finalFormData = new FormData();
-        // 傳送實體檔案給 Worker
-        finalFormData.append("image", currentPropImagesFiles[0]); 
-        finalFormData.append("title", document.getElementById('prop-name').value);
-        finalFormData.append("price", document.getElementById('prop-price').value);
-        finalFormData.append("size", document.getElementById('prop-size').value);
-        finalFormData.append("age", document.getElementById('prop-age').value);
-        finalFormData.append("room", document.getElementById('prop-room').value);
-        finalFormData.append("hall", document.getElementById('prop-hall').value);
-        finalFormData.append("bath", document.getElementById('prop-bath').value);
-        finalFormData.append("type_val", document.getElementById('prop-type-val').value);
-        finalFormData.append("parking", document.getElementById('prop-parking').value);
+            try {
+                const finalFormData = new FormData();
+                // 傳送第一個選取的檔案給 Worker
+                finalFormData.append("image", currentPropImagesFiles[0]); 
+                finalFormData.append("title", propName);
+                finalFormData.append("price", document.getElementById('prop-price').value || 0);
+                finalFormData.append("size", document.getElementById('prop-size').value || 0);
+                finalFormData.append("age", document.getElementById('prop-age').value || 0);
+                finalFormData.append("room", document.getElementById('prop-room').value || 0);
+                finalFormData.append("hall", document.getElementById('prop-hall').value || 0);
+                finalFormData.append("bath", document.getElementById('prop-bath').value || 0);
+                finalFormData.append("type_val", document.getElementById('prop-type-val').value);
+                finalFormData.append("parking", document.getElementById('prop-parking').value);
 
-        // 這裡路徑必須是 /upload，與 Worker 保持一致
-        const res = await fetch(`${workerUrl}/upload`, { 
-            method: 'POST', 
-            body: finalFormData // 自動處理 Content-Type: multipart/form-data
-        });
+                const res = await fetch(`${workerUrl}/upload`, { 
+                    method: 'POST', 
+                    body: finalFormData 
+                });
 
-        if (res.ok) { 
-            alert("✅ 物件已成功上傳並同步至 Notion！"); 
-            navigateTo('realestate'); // 回到列表頁
-            location.reload(); 
-        } else { 
-            const errMsg = await res.text();
-            alert("❌ 同步失敗: " + errMsg); 
+                if (res.ok) { 
+                    alert("✅ 物件已成功上傳！Notion 資料同步中，請稍後刷新頁面。"); 
+                    location.reload(); 
+                } else { 
+                    const errMsg = await res.text();
+                    alert("❌ 同步失敗: " + errMsg); 
+                }
+            } catch (e) { 
+                alert("❌ 連線 Worker 失敗，請確認 Worker 是否在運行中。");
+                console.error(e);
+            } finally { 
+                btn.innerText = "上傳資料並同步至 Notion 雲端"; 
+                btn.disabled = false; 
+            }
         }
-    } catch (e) { 
-        alert("❌ 網路連線失敗，請檢查 Worker URL 或網路設定"); 
-        console.error(e);
-    } finally { 
-        btn.innerText = "上傳資料並同步至 Notion 雲端"; 
-        btn.disabled = false; 
-    }
-}
 
-
+        // 圖片預覽調整：儲存檔案到陣列中
         function handleImgPreview(files, targetId, isSingle = false, context = 'estate') {
             const target = document.getElementById(targetId);
             Array.from(files).forEach(file => {
-                if(context === 'estate') currentPropImagesFiles.push(file); // 存入實體檔案
+                if(context === 'estate') currentPropImagesFiles.push(file); 
                 
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -825,11 +822,9 @@
 
         function removeImg(el, context) {
             const box = el.parentElement;
-            const imgSrc = box.querySelector('img').src;
-            // 這裡簡單處理，如果是 estate，我們同步清理（實際應根據索引刪除較準確）
+            // 簡單處理：從陣列中移除第一個檔案 (實作應根據索引)
             if(context === 'estate') currentPropImagesFiles.shift(); 
             box.remove();
-            lucide.createIcons();
         }
 
         function saveOfficeChanges() {
