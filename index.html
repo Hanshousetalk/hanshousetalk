@@ -500,14 +500,14 @@
                                 </select>
                             </div>
                             <div class="col-span-full space-y-4">
-                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block tracking-widest">物件封面圖上傳</label>
-                                <div id="estate-img-preview" class="w-full max-w-xs">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block tracking-widest">物件照片管理 (可多張，第一張為封面)</label>
+                                <div id="estate-img-preview" class="grid grid-cols-2 md:grid-cols-4 gap-6">
                                     <div onclick="document.getElementById('fileInProp').click()" class="preview-box border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-300 cursor-pointer hover:bg-stone-50 transition-all">
                                         <i data-lucide="image-plus" class="w-8 h-8 mb-2"></i>
-                                        <span class="text-[9px] font-bold tracking-widest uppercase">Select Photo</span>
+                                        <span class="text-[9px] font-bold tracking-widest uppercase">Add Photo</span>
                                     </div>
                                 </div>
-                                <input type="file" id="fileInProp" class="hidden" accept="image/*" onchange="handleImgPreview(this.files, 'estate-img-preview', true)">
+                                <input type="file" id="fileInProp" class="hidden" multiple accept="image/*" onchange="handleImgPreview(this.files, 'estate-img-preview', false, 'estate')">
                             </div>
                         </div>
                         <button onclick="submitProperty(event)" id="submit-prop-btn" class="w-full bg-[#b4a082] text-white py-6 font-bold text-[11px] uppercase tracking-[0.5em] hover:bg-stone-900 transition-all shadow-xl">
@@ -523,7 +523,7 @@
                                 <span class="text-[9px] font-bold tracking-widest uppercase">Add Media</span>
                             </div>
                         </div>
-                        <input type="file" id="fileIn2" class="hidden" multiple accept="image/*" onchange="handleImgPreview(this.files, 'office-preview')">
+                        <input type="file" id="fileIn2" class="hidden" multiple accept="image/*" onchange="handleImgPreview(this.files, 'office-preview', false, 'office')">
                         <button onclick="saveOfficeChanges()" class="w-full bg-stone-900 text-white py-5 font-bold text-[11px] uppercase tracking- [0.4em] hover:bg-black transition-all">儲存目前所有變更</button>
                     </div>
 
@@ -596,9 +596,9 @@
     <script>
         const workerUrl = 'https://hanxuan.hank30005.workers.dev';
         let allEstates = []; 
-        let currentPropImage = "";
+        let currentPropImages = []; // 修改為陣列，存儲物件的多張照片
         
-        // --- 登入安全性邏輯修改 ---
+        // --- 登入安全性邏輯 ---
         function getAuthCredentials() {
             const savedU = localStorage.getItem('han_admin_u') || 'admin';
             const savedP = localStorage.getItem('han_admin_p') || '1234';
@@ -612,7 +612,6 @@
 
             if (uInput === creds.u && pInput === creds.p) { 
                 navigateTo('admin'); 
-                // 預填新憑證欄位方便修改
                 document.getElementById('new-adm-u').value = creds.u;
                 document.getElementById('new-adm-p').value = creds.p;
             } else { 
@@ -623,19 +622,13 @@
         function updateSecuritySettings() {
             const newU = document.getElementById('new-adm-u').value.trim();
             const newP = document.getElementById('new-adm-p').value.trim();
-
-            if (!newU || !newP) {
-                alert("帳號與密碼不能為空");
-                return;
-            }
-
+            if (!newU || !newP) { alert("帳號與密碼不能為空"); return; }
             localStorage.setItem('han_admin_u', newU);
             localStorage.setItem('han_admin_p', newP);
-            alert("✅ 憑證已成功更新！下次登入請使用新資訊。");
+            alert("✅ 憑證已成功更新！");
         }
-        // -----------------------
 
-        // Swiper 實例初始化
+        // Swiper 初始化
         let homeSwiper;
         function initSwiper() {
             homeSwiper = new Swiper(".homeSwiper", {
@@ -695,7 +688,6 @@
                 const name = p["名稱"]?.title[0]?.plain_text || "精選房屋物件";
                 const price = p["總價"]?.number || "面議";
                 const size = p["坪數"]?.number || "--";
-                const age = p["屋齡"]?.number || "--";
                 const room = p["房"]?.number || 0;
                 const hall = p["廳"]?.number || 0;
                 const bath = p["衛"]?.number || 0;
@@ -735,7 +727,6 @@
                 const valPrice = p["總價"]?.number || 0;
                 return matchesType && matchesParking && valPrice <= price;
             });
-
             renderEstates(filtered);
         }
 
@@ -746,6 +737,9 @@
 
         async function submitProperty(event) {
             const btn = event.target;
+            // 由於 Notion Cover 只能存一張，我們預設將第一張作為封面
+            const coverToSubmit = currentPropImages.length > 0 ? currentPropImages[0] : "";
+
             const payload = {
                 type: "ESTATE",
                 properties: {
@@ -756,13 +750,10 @@
                     "類型": { select: { name: document.getElementById('prop-type-val').value } },
                     "車位": { select: { name: document.getElementById('prop-parking').value } }
                 },
-                cover_url: currentPropImage 
+                cover_url: coverToSubmit 
             };
 
-            if(!currentPropImage) {
-                alert("請先上傳物件封面圖");
-                return;
-            }
+            if(!coverToSubmit) { alert("請至少上傳一張物件照片"); return; }
 
             btn.innerText = "正在同步...";
             btn.disabled = true;
@@ -778,19 +769,24 @@
             finally { btn.innerText = "上傳資料並同步至 Notion 雲端"; btn.disabled = false; }
         }
 
-        function handleImgPreview(files, targetId, isSingle = false) {
+        // 修改後的圖片預覽處理邏輯
+        function handleImgPreview(files, targetId, isSingle = false, context = 'estate') {
             const target = document.getElementById(targetId);
-            if(isSingle) target.innerHTML = "";
-
+            
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const imgData = e.target.result;
-                    if(isSingle) currentPropImage = imgData;
+                    
+                    // 如果是物件管理，則推入陣列
+                    if(context === 'estate') {
+                        currentPropImages.push(imgData);
+                    }
 
                     const div = document.createElement('div');
                     div.className = 'preview-box';
-                    div.innerHTML = `<img src="${imgData}"><div class="img-del" onclick="removeImg(this, ${isSingle})"><i data-lucide="x" class="w-3 h-3"></i></div>`;
+                    // 根據索引來刪除，這裡簡單處理使用 src 比對或傳遞 index
+                    div.innerHTML = `<img src="${imgData}"><div class="img-del" onclick="removeImg(this, '${context}')"><i data-lucide="x" class="w-3 h-3"></i></div>`;
                     target.appendChild(div);
                     lucide.createIcons();
                 };
@@ -798,18 +794,16 @@
             });
         }
 
-        function removeImg(el, isSingle) {
-            if(isSingle) {
-                currentPropImage = "";
-                el.parentElement.parentElement.innerHTML = `
-                    <div onclick="document.getElementById('fileInProp').click()" class="preview-box border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-300 cursor-pointer hover:bg-stone-50 transition-all">
-                        <i data-lucide="image-plus" class="w-8 h-8 mb-2"></i>
-                        <span class="text-[9px] font-bold tracking-widest uppercase">Select Photo</span>
-                    </div>
-                `;
-            } else {
-                el.parentElement.remove();
+        function removeImg(el, context) {
+            const box = el.parentElement;
+            const imgSrc = box.querySelector('img').src;
+
+            if(context === 'estate') {
+                // 從陣列中移除
+                currentPropImages = currentPropImages.filter(src => src !== imgSrc);
             }
+            
+            box.remove();
             lucide.createIcons();
         }
 
@@ -845,5 +839,3 @@
     </script>
 </body>
 </html>
-
-
