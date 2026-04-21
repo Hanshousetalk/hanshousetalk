@@ -450,6 +450,9 @@
                         <div onclick="switchAdminTab('office-img', this)" class="admin-tab flex items-center gap-3">
                             <i data-lucide="camera" class="w-4 h-4"></i> 環境影像維護
                         </div>
+                        <div onclick="switchAdminTab('account', this)" class="admin-tab flex items-center gap-3">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i> 帳號密碼設定
+                        </div>
                         <button onclick="location.reload()" class="p-6 text-left text-xs text-red-400 font-bold hover:bg-red-50 transition-colors flex items-center gap-3 border-t">
                             <i data-lucide="log-out" class="w-4 h-4"></i> 安全登出系統
                         </button>
@@ -523,6 +526,29 @@
                         <input type="file" id="fileIn2" class="hidden" multiple accept="image/*" onchange="handleImgPreview(this.files, 'office-preview')">
                         <button onclick="saveOfficeChanges()" class="w-full bg-stone-900 text-white py-5 font-bold text-[11px] uppercase tracking- [0.4em] hover:bg-black transition-all">儲存目前所有變更</button>
                     </div>
+
+                    <div id="adm-account" class="admin-content hidden space-y-12">
+                        <div class="flex justify-between items-end border-b pb-8">
+                            <h3 class="serif text-2xl font-bold">帳號密碼安全性設定</h3>
+                            <span class="text-[10px] text-stone-300 tracking-widest">SECURITY SETTINGS</span>
+                        </div>
+                        <div class="max-w-md space-y-10">
+                            <div class="space-y-4">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">更改後台登入帳號</label>
+                                <input type="text" id="new-adm-u" placeholder="請輸入新帳號" class="art-input">
+                            </div>
+                            <div class="space-y-4">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-widest block">更改後台登入密碼</label>
+                                <input type="password" id="new-adm-p" placeholder="請輸入新密碼" class="art-input">
+                            </div>
+                            <div class="p-6 bg-stone-50 border border-stone-100 rounded-sm">
+                                <p class="text-xs text-stone-400 leading-relaxed italic">
+                                    💡 提示：修改後請牢記您的憑證。若遺忘密碼，需手動清理瀏覽器快取以恢復預設值 (admin / 1234)。
+                                </p>
+                            </div>
+                            <button onclick="updateSecuritySettings()" class="w-full bg-stone-900 text-white py-5 font-bold text-[11px] uppercase tracking-[0.4em] hover:bg-black transition-all">更新憑證資訊</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -572,6 +598,43 @@
         let allEstates = []; 
         let currentPropImage = "";
         
+        // --- 登入安全性邏輯修改 ---
+        function getAuthCredentials() {
+            const savedU = localStorage.getItem('han_admin_u') || 'admin';
+            const savedP = localStorage.getItem('han_admin_p') || '1234';
+            return { u: savedU, p: savedP };
+        }
+
+        function handleLogin() {
+            const uInput = document.getElementById('adm-u').value;
+            const pInput = document.getElementById('adm-p').value;
+            const creds = getAuthCredentials();
+
+            if (uInput === creds.u && pInput === creds.p) { 
+                navigateTo('admin'); 
+                // 預填新憑證欄位方便修改
+                document.getElementById('new-adm-u').value = creds.u;
+                document.getElementById('new-adm-p').value = creds.p;
+            } else { 
+                alert('❌ 驗證失敗，請確認 Founder 憑證'); 
+            }
+        }
+
+        function updateSecuritySettings() {
+            const newU = document.getElementById('new-adm-u').value.trim();
+            const newP = document.getElementById('new-adm-p').value.trim();
+
+            if (!newU || !newP) {
+                alert("帳號與密碼不能為空");
+                return;
+            }
+
+            localStorage.setItem('han_admin_u', newU);
+            localStorage.setItem('han_admin_p', newP);
+            alert("✅ 憑證已成功更新！下次登入請使用新資訊。");
+        }
+        // -----------------------
+
         // Swiper 實例初始化
         let homeSwiper;
         function initSwiper() {
@@ -595,7 +658,6 @@
                 target.classList.add('active');
                 toggleSideMenu(false);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                // 如果切換回首頁，更新 Swiper
                 if(id === 'home' && homeSwiper) homeSwiper.update();
             }
             if (id === 'realestate') loadRealEstate();
@@ -604,16 +666,6 @@
         function toggleSideMenu(open) { 
             const menu = document.getElementById('side-menu');
             menu.style.transform = open ? 'translateX(0)' : 'translateX(100%)'; 
-        }
-
-        function handleLogin() {
-            const u = document.getElementById('adm-u').value;
-            const p = document.getElementById('adm-p').value;
-            if (u === 'admin' && p === '1234') { 
-                navigateTo('admin'); 
-            } else { 
-                alert('❌ 驗證失敗，請確認 Founder 憑證'); 
-            }
         }
 
         async function loadRealEstate() {
@@ -647,7 +699,6 @@
                 const room = p["房"]?.number || 0;
                 const hall = p["廳"]?.number || 0;
                 const bath = p["衛"]?.number || 0;
-                const park = p["車位"]?.select?.name || "無車位";
 
                 container.innerHTML += `
                     <div class="property-card group cursor-pointer" onclick="window.open('https://lin.ee/WexkD85')">
@@ -762,27 +813,20 @@
             lucide.createIcons();
         }
 
-        // 修改處：更新首頁輪播圖邏輯
         function saveOfficeChanges() {
             const imgs = document.querySelectorAll('#office-preview img');
             const swiperWrapper = document.getElementById('home-hero-swiper-wrapper');
             
             if (imgs.length > 0) {
-                // 清空原本的輪播圖
                 swiperWrapper.innerHTML = '';
-                
-                // 將後台的所有圖片加入輪播
                 imgs.forEach(img => {
                     const slide = document.createElement('div');
                     slide.className = 'swiper-slide';
                     slide.innerHTML = `<img src="${img.src}" class="w-full h-full object-cover">`;
                     swiperWrapper.appendChild(slide);
                 });
-
-                // 重新初始化 Swiper
                 if(homeSwiper) homeSwiper.destroy();
                 initSwiper();
-
                 alert("✅ 首頁輪播圖已同步更新。");
             } else {
                 alert("請先上傳環境影像");
@@ -791,11 +835,15 @@
 
         function switchAdminTab(id, el) {
             document.querySelectorAll('.admin-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById('adm-' + id).classList.remove('hidden');
+            const target = document.getElementById('adm-' + id);
+            if(target) target.classList.remove('hidden');
+            
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
+            lucide.createIcons();
         }
     </script>
 </body>
 </html>
+
 
