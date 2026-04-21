@@ -144,7 +144,6 @@
         .swiper-button-next, .swiper-button-prev { color: white; transform: scale(0.7); }
         .swiper-pagination-bullet-active { background: var(--gold) !important; }
         
-        /* 管理後台清單樣式 */
         .admin-list-item {
             border-bottom: 1px solid var(--stone-100);
             padding: 15px 0;
@@ -198,7 +197,7 @@
                 </div>
                 <nav class="flex flex-col gap-10">
                     <div class="overflow-hidden">
-                        <h3 onclick="navigateTo('home')" class="text-4xl md:text-5xl font-bold serif serif cursor-pointer hover:translate-x-4 transition-transform duration-500">首頁 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">HOME</span></h3>
+                        <h3 onclick="navigateTo('home')" class="text-4xl md:text-5xl font-bold serif cursor-pointer hover:translate-x-4 transition-transform duration-500">首頁 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">HOME</span></h3>
                     </div>
                     <div class="overflow-hidden">
                         <h3 onclick="navigateTo('realestate')" class="text-4xl md:text-5xl font-bold serif cursor-pointer hover:translate-x-4 transition-transform duration-500">房地產物件 <span class="text-sm font-sans font-light text-stone-300 ml-4 italic">ESTATE</span></h3>
@@ -479,7 +478,8 @@
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-x-8 gap-y-10">
-                            <input type="hidden" id="prop-id"> <div class="col-span-full">
+                            <input type="hidden" id="prop-id">
+                            <div class="col-span-full">
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block tracking-widest">物件標題名稱</label>
                                 <input type="text" id="prop-name" placeholder="例如：西區台灣大道美宅" class="art-input font-bold text-lg">
                             </div>
@@ -498,6 +498,14 @@
                             </div>
 
                             <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block text-blue-600 font-bold">主建物坪數</label>
+                                <input type="number" step="0.01" id="prop-main-size" class="art-input border-blue-100">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block text-blue-600 font-bold">附屬建物坪數</label>
+                                <input type="number" step="0.01" id="prop-sub-size" class="art-input border-blue-100">
+                            </div>
+                            <div class="space-y-2">
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">屋齡 (年)</label>
                                 <input type="number" id="prop-age" class="art-input">
                             </div>
@@ -509,6 +517,7 @@
                                     <input type="number" id="prop-bath" class="art-input text-center" placeholder="衛">
                                 </div>
                             </div>
+
                             <div class="space-y-2">
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">陽台數量</label>
                                 <input type="number" id="prop-balcony" class="art-input" placeholder="個">
@@ -523,7 +532,6 @@
                                     <option value="土地">土地開發</option>
                                 </select>
                             </div>
-
                             <div class="space-y-2">
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">車位類型</label>
                                 <select id="prop-parking-type" class="art-input">
@@ -536,6 +544,7 @@
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">車位數量</label>
                                 <input type="number" id="prop-parking-count" class="art-input" value="0">
                             </div>
+
                             <div class="space-y-2">
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">車位坪數</label>
                                 <input type="number" id="prop-parking-size" class="art-input" placeholder="坪">
@@ -729,7 +738,6 @@
                     countDisplay.innerText = `顯示 ${allEstates.length} 個物件`;
                 }
                 
-                // 後台管理清單渲染
                 if(admList) {
                     admList.innerHTML = '';
                     allEstates.forEach(item => {
@@ -792,7 +800,6 @@
             });
         }
 
-        // 後台編輯功能
         function editProperty(id) {
             const item = allEstates.find(e => e.id === id);
             if(!item) return;
@@ -802,6 +809,8 @@
             document.getElementById('prop-name').value = p["名稱"]?.title[0]?.plain_text || "";
             document.getElementById('prop-price').value = p["總價"]?.number || "";
             document.getElementById('prop-size').value = p["坪數"]?.number || "";
+            document.getElementById('prop-main-size').value = p["主建物坪數"]?.number || "";
+            document.getElementById('prop-sub-size').value = p["附屬建物坪數"]?.number || "";
             document.getElementById('prop-age').value = p["屋齡"]?.number || "";
             document.getElementById('prop-room').value = p["房"]?.number || "";
             document.getElementById('prop-hall').value = p["廳"]?.number || "";
@@ -817,7 +826,6 @@
             alert("已載入物件資料至上方表單，修改後點擊上傳即可更新。");
         }
 
-        // 後台刪除功能
         async function deleteProperty(id) {
             if(!confirm("確定要從雲端永久刪除此物件嗎？")) return;
             try {
@@ -839,6 +847,8 @@
             document.getElementById('prop-address').value = "";
             document.getElementById('prop-price').value = "";
             document.getElementById('prop-size').value = "";
+            document.getElementById('prop-main-size').value = "";
+            document.getElementById('prop-sub-size').value = "";
             document.getElementById('prop-age').value = "";
             document.getElementById('prop-room').value = "";
             document.getElementById('prop-hall').value = "";
@@ -853,7 +863,7 @@
 
         async function submitProperty(event) {
             const btn = document.getElementById('submit-prop-btn');
-            const propId = document.getElementById('prop-id').value; // 如果有值代表是編輯
+            const propId = document.getElementById('prop-id').value;
 
             if(!document.getElementById('prop-name').value) { alert("請輸入物件名稱"); return; }
 
@@ -866,11 +876,13 @@
                     finalFormData.append("image", currentPropImagesFiles[0]);
                 }
                 
-                finalFormData.append("propId", propId); // 傳送 ID 供 Worker 判斷是新增還是更新
+                finalFormData.append("propId", propId);
                 finalFormData.append("title", document.getElementById('prop-name').value);
                 finalFormData.append("address", document.getElementById('prop-address').value);
                 finalFormData.append("price", document.getElementById('prop-price').value);
                 finalFormData.append("size", document.getElementById('prop-size').value);
+                finalFormData.append("main_size", document.getElementById('prop-main-size').value);
+                finalFormData.append("sub_size", document.getElementById('prop-sub-size').value);
                 finalFormData.append("age", document.getElementById('prop-age').value);
                 finalFormData.append("room", document.getElementById('prop-room').value);
                 finalFormData.append("hall", document.getElementById('prop-hall').value);
