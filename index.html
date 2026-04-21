@@ -434,7 +434,7 @@
             </div>
         </section>
 
-        <section id="page-login" class="page-view max-w-lg mx-auto px-8 pt-32">
+        <section id="page-login" class="page-view max-lg mx-auto px-8 pt-32">
             <div class="bg-white p-12 border border-stone-100 shadow-2xl space-y-12 text-center relative">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-stone-200 via-stone-900 to-stone-200"></div>
                 <div class="space-y-2">
@@ -503,6 +503,14 @@
                                 <input type="number" id="prop-size" class="art-input">
                             </div>
 
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">主建物坪數</label>
+                                <input type="number" step="0.01" id="prop-main-size" class="art-input" placeholder="坪">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">附屬建物坪數</label>
+                                <input type="number" step="0.01" id="prop-sub-size" class="art-input" placeholder="坪">
+                            </div>
                             <div class="space-y-2">
                                 <label class="text-[10px] font-bold text-stone-400 uppercase mb-1 block">屋齡 (年)</label>
                                 <input type="number" id="prop-age" class="art-input">
@@ -855,6 +863,11 @@
             document.getElementById('prop-name').value = p["名稱"]?.title[0]?.plain_text || "";
             document.getElementById('prop-price').value = p["總價"]?.number || "";
             document.getElementById('prop-size').value = p["坪數"]?.number || "";
+
+            // 載入新增坪數欄位
+            document.getElementById('prop-main-size').value = p["主建物坪數"]?.number || "";
+            document.getElementById('prop-sub-size').value = p["附屬建物坪數"]?.number || "";
+
             document.getElementById('prop-age').value = p["屋齡"]?.number || "";
             
             // 處理開放式格局勾選
@@ -905,6 +918,11 @@
             document.getElementById('prop-address').value = "";
             document.getElementById('prop-price').value = "";
             document.getElementById('prop-size').value = "";
+            
+            // 重置新增欄位
+            document.getElementById('prop-main-size').value = "";
+            document.getElementById('prop-sub-size').value = "";
+
             document.getElementById('prop-age').value = "";
             
             document.getElementById('prop-is-open').checked = false;
@@ -947,6 +965,11 @@
                 finalFormData.append("address", document.getElementById('prop-address').value);
                 finalFormData.append("price", document.getElementById('prop-price').value);
                 finalFormData.append("size", document.getElementById('prop-size').value);
+                
+                // 傳送新增坪數欄位
+                finalFormData.append("main_size", document.getElementById('prop-main-size').value);
+                finalFormData.append("sub_size", document.getElementById('prop-sub-size').value);
+
                 finalFormData.append("age", document.getElementById('prop-age').value);
                 
                 // 格局資料
